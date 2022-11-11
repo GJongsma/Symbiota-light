@@ -97,6 +97,9 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=3"><?php echo (isset($LANG['H_HERPS'])?$LANG['H_HERPS']:'Amphibians & Reptiles'); ?></a>
 							</li>
 							<li>
+								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=9"><?php echo (isset($LANG['H_POISSON'])?$LANG['H_POISSON']:'Poisson (Fish)'); ?></a>
+							</li>
+							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=1"><?php echo (isset($LANG['H_ANIMALIA'])?$LANG['H_ANIMALIA']:'Animalia'); ?></a>
 							</li>
 							<li>
