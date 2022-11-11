@@ -54,7 +54,7 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							<option value="fr" <?php echo ($LANG_TAG=='fr'?'SELECTED':''); ?>>Français</option>
 						</select>
 						<?php
-						if($IS_ADMIN) echo '<a href="'.$CLIENT_ROOT.'/content/lang/admin/langmanager.php?refurl='.$_SERVER['SCRIPT_NAME'].'"><img src="'.$CLIENT_ROOT.'/images/edit.png" style="width:12px" /></a>';
+						//if($IS_ADMIN) echo '<a href="'.$CLIENT_ROOT.'/content/lang/admin/langmanager.php?refurl='.$_SERVER['SCRIPT_NAME'].'"><img src="'.$CLIENT_ROOT.'/images/edit.png" style="width:12px" /></a>';
 						?>
 					</span>
 				</div>
@@ -93,11 +93,9 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 					<li>
 						<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php"><?php echo (isset($LANG['H_INVENTORIES'])?$LANG['H_INVENTORIES']:'Inventaires'); ?></a>
 						<ul>
-							<!--
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=3"><?php echo (isset($LANG['H_HERPS'])?$LANG['H_HERPS']:'Amphibians & Reptiles'); ?></a>
 							</li>
-							 -->
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=1"><?php echo (isset($LANG['H_ANIMALIA'])?$LANG['H_ANIMALIA']:'Animalia'); ?></a>
 							</li>
@@ -172,10 +170,10 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 								<?php
 							}
 							?>
-							<li>
-								<a href='<?php echo $CLIENT_ROOT; ?>/sitemap.php'><?php echo (isset($LANG['H_SITEMAP'])?$LANG['H_SITEMAP']:'Sitemap'); ?></a>
-							</li>
 						</ul>
+					</li>
+					<li>
+						<a href='<?php echo $CLIENT_ROOT; ?>/sitemap.php'><?php echo (isset($LANG['H_SITEMAP'])?$LANG['H_SITEMAP']:'Sitemap'); ?></a>
 					</li>
 				</ul>
 			</div>
