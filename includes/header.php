@@ -88,6 +88,9 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/imagelib/search.php"><?php echo (isset($LANG['H_IMAGE_SEARCH'])?$LANG['H_IMAGE_SEARCH']:'Search Images'); ?></a>
 							</li>
+							<li>
+								<a href="<?php echo $CLIENT_ROOT; ?>/imagelib/contributors.php"><?php echo (isset($LANG['H_PHOTO_CONT'])?$LANG['H_PHOTO_CONT']:"Contributeurs d'Images"); ?></a>
+							</li>
 						</ul>
 					</li>
 					<li>
