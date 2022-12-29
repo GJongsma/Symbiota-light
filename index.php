@@ -60,8 +60,8 @@ header("Content-Type: text/html; charset=".$CHARSET);
 				//---------------------------DO NOT CHANGE BELOW HERE-----------------------------
 				ini_set('max_execution_time', 120);
 				include_once($SERVER_ROOT.'/classes/PluginsManager.php');
-				//$pluginManager = new PluginsManager();
-				//echo $pluginManager->createSlideShow($ssId,$numSlides,$width,$numDays,$imageType,$clId,$dayInterval,$interval);
+				$pluginManager = new PluginsManager();
+				echo $pluginManager->createSlideShow($ssId,$numSlides,$width,$numDays,$imageType,$clId,$dayInterval,$interval);
 				?>
 			</div>
 		</div>
