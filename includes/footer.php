@@ -20,8 +20,8 @@
 			?>
 			</div>
 			<p>
-				<a href="https://www.gbif.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/GBIF_logo.png" style="height:50px; padding: 10px" /></a>
-				<a href="https://www.nature.org/en-us/about-us/where-we-work/africa/gabon/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/TNC_logo.png" style="width:150px; padding: 10px" /></a>
+				<a href="https://www.gbif.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/GBIF_logo.png" style="height:50px; padding: 10px" /></a>
+				<a href="https://www.nature.org/en-us/about-us/where-we-work/africa/gabon/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/TNC_logo.png" style="width:150px; padding: 10px" /></a>
 				<a href="https://biokic.asu.edu" target="_blank" title="Biodiversity Knowledge Integration Center"><img src="<?php echo $CLIENT_ROOT; ?>/images/layout/logo-asu-biokic.png" style="width:150px; padding: 10 px" /></a>
 				<span style="margin-left: 600px">&nbsp;</span>
 			</p>
