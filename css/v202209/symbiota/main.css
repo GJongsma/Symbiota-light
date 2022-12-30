@@ -220,7 +220,6 @@ hr {
   border-radius: 5px;
   padding: 0.6rem 1rem;
   font-family: var(--heading-font-family);
-  letter-spacing: 1px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease-in-out;

@@ -10,7 +10,6 @@ header("Content-Type: text/html; charset=" . $CHARSET);
 	include_once($SERVER_ROOT . '/includes/head.php');
 	include_once($SERVER_ROOT . '/includes/googleanalytics.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/symb/lang.js" type="text/javascript"></script>
 	<style type="text/css">
 		.headline{ text-align: center; line-height: 1.4em; }
 	</style>
@@ -39,8 +38,6 @@ header("Content-Type: text/html; charset=" . $CHARSET);
 	include($SERVER_ROOT . '/includes/footer.php');
 	?>
 	<script type="text/javascript">
-		//Uncomment setLanguageDiv() to support toggling of language content containing DIVs with lang classes in form of:
-		// <div class="lang en">Content in English</div><div class="lang es">Content in Spanish</div>
 		setLanguageDiv();
 	</script>
 </body>

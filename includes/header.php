@@ -9,14 +9,14 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 				<?php
 				if ($USER_DISPLAY_NAME) {
 					?>
-					<span style="">
-						<?php echo (isset($LANG['H_WELCOME'])?$LANG['H_WELCOME']:'Welcome').' '.$USER_DISPLAY_NAME; ?>!
+					<span class="button button-secondary">
+						<a href="<?php echo $CLIENT_ROOT; ?>/profile/index.php?submit=logout"><?php echo (isset($LANG['H_LOGOUT'])?$LANG['H_LOGOUT']:'Logout')?></a>
 					</span>
 					<span class="button button-tertiary">
 						<a href="<?php echo $CLIENT_ROOT; ?>/profile/viewprofile.php"><?php echo (isset($LANG['H_MY_PROFILE'])?$LANG['H_MY_PROFILE']:'My Profile')?></a>
 					</span>
-					<span class="button button-secondary">
-						<a href="<?php echo $CLIENT_ROOT; ?>/profile/index.php?submit=logout"><?php echo (isset($LANG['H_LOGOUT'])?$LANG['H_LOGOUT']:'Logout')?></a>
+					<span style="">
+						<?php echo (isset($LANG['H_WELCOME'])?$LANG['H_WELCOME']:'Welcome').' '.$USER_DISPLAY_NAME; ?>
 					</span>
 					<?php
 				}
@@ -30,12 +30,6 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 					<?php
 				}
 				?>
-				<span style="margin-left:5px;margin-right:5px;">
-					<select onchange="setLanguage(this)">
-						<option value="en">English</option>
-						<option value="fr" <?php echo ($LANG_TAG=='fr'?'SELECTED':''); ?>>Français</option>
-					</select>
-				</span>
 			</nav>
 			<div class="top-brand">
 				<a href="https://www.nbm-mnb.ca/natural-sciences/">
@@ -45,6 +39,13 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 					<h1></h1>
 					<h2></h2>
 				</div>
+			</div>
+			<div></div>
+			<div style="text-align: right; margin-right:5px;">
+				<select onchange="setLanguage(this)">
+					<option value="en">English</option>
+					<option value="fr" <?php echo ($LANG_TAG=='fr'?'SELECTED':''); ?>>Français</option>
+				</select>
 			</div>
 		</div>
 		<div class="menu-wrapper">
