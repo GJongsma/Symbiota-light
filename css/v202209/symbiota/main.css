@@ -111,9 +111,9 @@ hr {
 
 #innertext {
   margin: 0 auto;
-  padding: 3rem 0;
+  padding: 2rem 0;
   background-color: var(--body-bg-color);
-  width: 90%;
+  width: 95%;
 }
 
 #innertext p {
@@ -281,7 +281,7 @@ hr {
 /* Medium-large screens only */
 @media screen and (min-width: 1024px) {
   #innertext {
-    width: 90%;
+    width: 95%;
     max-width: var(--max-innertext-width);
   }
 }

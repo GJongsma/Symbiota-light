@@ -32,7 +32,7 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 				?>
 			</nav>
 			<div class="top-brand">
-				<a href="https://www.nbm-mnb.ca/natural-sciences/">
+				<a href="https://www.nbm-mnb.ca/natural-sciences/" target="_blank">
 					<img src="<?php echo $CLIENT_ROOT; ?>/images/layout/NBM_White-325.png" alt="New Brunswick logo" width="100%">
 				</a>
 				<div class="brand-name">
