@@ -3,6 +3,7 @@
 .header-wrapper {
   padding: 20px;
   background-color: var(--menu-top-bg-color);
+  border-bottom: #777 solid 1px;
 }
 
 header {
