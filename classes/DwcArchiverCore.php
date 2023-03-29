@@ -314,7 +314,7 @@ class DwcArchiverCore extends Manager{
 							if ($cond == 'NOTEQUALS' || $cond == 'NOTLIKE') $sqlFrag2 .= ' OR id.identifierValue IS NULL';
 							$sqlFrag2 .= ')) ';
 						} else {
-							$sqlFrag2 = $this->getSqlFragment($field, $cond, $valueArr);
+							$sqlFrag2 .= $this->getSqlFragment($field, $cond, $valueArr);
 						}
 					}
 					if ($sqlFrag2) $sqlFrag .= 'AND (' . substr($sqlFrag2, 4) . ') ';
@@ -891,6 +891,7 @@ class DwcArchiverCore extends Manager{
 			unlink($this->targetPath . $this->ts . '-meta.xml');
 			if ($this->schemaType == 'dwc') rename($this->targetPath . $this->ts . '-eml.xml', $this->targetPath . str_replace('.zip', '.eml', $fileName));
 			else unlink($this->targetPath . $this->ts . '-eml.xml');
+			if (file_exists($this->targetPath . $this->ts . '-citation.txt')) unlink($this->targetPath . $this->ts . '-citation.txt');
 		}
 		else {
 			$this->errorMessage = 'FAILED to create archive file due to failure to return occurrence records; check and adjust search variables';
@@ -1118,25 +1119,23 @@ class DwcArchiverCore extends Manager{
 			//Dataset contains multiple collection data
 			$emlArr['title'] = $GLOBALS['DEFAULT_TITLE'] . ' general data extract';
 			if (isset($GLOBALS['SYMB_UID']) && $GLOBALS['SYMB_UID']) {
-				$sql = 'SELECT uid, lastname, firstname, title, institution, department, address, city, state, zip, country, phone, email, ispublic FROM users WHERE (uid = ' . $GLOBALS['SYMB_UID'] . ')';
+				$sql = 'SELECT uid, lastname, firstname, title, institution, department, address, city, state, zip, country, phone, email FROM users WHERE (uid = ' . $GLOBALS['SYMB_UID'] . ')';
 				$rs = $this->conn->query($sql);
 				if ($r = $rs->fetch_object()) {
 					$emlArr['associatedParty'][0]['individualName']['surName'] = $r->lastname;
 					if ($r->firstname) $emlArr['associatedParty'][0]['individualName']['givenName'] = $r->firstname;
 					if ($r->email) $emlArr['associatedParty'][0]['electronicMailAddress'] = $r->email;
 					$emlArr['associatedParty'][0]['role'] = 'datasetOriginator';
-					if ($r->ispublic) {
-						if ($r->institution) $emlArr['associatedParty'][0]['organizationName'] = $r->institution;
-						if ($r->title) $emlArr['associatedParty'][0]['positionName'] = $r->title;
-						if ($r->phone) $emlArr['associatedParty'][0]['phone'] = $r->phone;
-						if ($r->state) {
-							if ($r->department) $emlArr['associatedParty'][0]['address']['deliveryPoint'][] = $r->department;
-							if ($r->address) $emlArr['associatedParty'][0]['address']['deliveryPoint'][] = $r->address;
-							if ($r->city) $emlArr['associatedParty'][0]['address']['city'] = $r->city;
-							$emlArr['associatedParty'][0]['address']['administrativeArea'] = $r->state;
-							if ($r->zip) $emlArr['associatedParty'][0]['address']['postalCode'] = $r->zip;
-							if ($r->country) $emlArr['associatedParty'][0]['address']['country'] = $r->country;
-						}
+					if ($r->institution) $emlArr['associatedParty'][0]['organizationName'] = $r->institution;
+					if ($r->title) $emlArr['associatedParty'][0]['positionName'] = $r->title;
+					if ($r->phone) $emlArr['associatedParty'][0]['phone'] = $r->phone;
+					if ($r->state) {
+						if ($r->department) $emlArr['associatedParty'][0]['address']['deliveryPoint'][] = $r->department;
+						if ($r->address) $emlArr['associatedParty'][0]['address']['deliveryPoint'][] = $r->address;
+						if ($r->city) $emlArr['associatedParty'][0]['address']['city'] = $r->city;
+						$emlArr['associatedParty'][0]['address']['administrativeArea'] = $r->state;
+						if ($r->zip) $emlArr['associatedParty'][0]['address']['postalCode'] = $r->zip;
+						if ($r->country) $emlArr['associatedParty'][0]['address']['country'] = $r->country;
 					}
 					$rs->free();
 				}
@@ -2026,11 +2025,12 @@ class DwcArchiverCore extends Manager{
 
 		// Decides which citation format to use according to $citationVarArr
 		// Checks first argument in query params
+		$citationFormat = 'portal';
+		$citationPrefix = 'Portal';
 		switch (array_key_first($citationParamsArr)) {
 			case "archivedcollid":
-				$collData = $_SESSION['colldata'];
 				// if collData includes a gbiftitle, pass it to the citation
-				if (array_key_exists('gbiftitle', $collData)) {
+				if (isset($_SESSION['colldata']) && array_key_exists('gbiftitle', $_SESSION['colldata'])) {
 					$citationFormat = "gbif";
 				} else {
 					$citationFormat = "collection";
@@ -2038,14 +2038,13 @@ class DwcArchiverCore extends Manager{
 				$citationPrefix = "Collection Page, Archived DwC-A package created";
 				break;
 			case "collid":
-				$collData = $_SESSION['colldata'];
 				// if collData includes a gbiftitle, pass it to the citation
-				if ($collData && array_key_exists('gbiftitle', $collData)) {
-					$citationFormat = "gbif";
+				if (isset($_SESSION['colldata']) && array_key_exists('gbiftitle', $_SESSION['colldata'])) {
+					$citationFormat = 'gbif';
 				} else {
-					$citationFormat = "collection";
+					$citationFormat = 'collection';
 				}
-				$citationPrefix = "Collection Page, Live data downloaded";
+				$citationPrefix = 'Collection Page, Live data downloaded';
 				break;
 			case "db":
 				$citationFormat = "portal";
@@ -2057,9 +2056,6 @@ class DwcArchiverCore extends Manager{
 				$dArr['name'] = $_SESSION['datasetName'];
 				$datasetid = $_SESSION['datasetid'];
 				break;
-			default:
-				$citationFormat = "portal";
-				$citationPrefix = "Portal";
 		}
 
 		$output = "This data package was downloaded from a " . $GLOBALS['DEFAULT_TITLE'] . " " . $citationPrefix . " on " . date('Y-m-d H:i:s') . ".\n\nPlease use the following format to cite this dataset:\n";
