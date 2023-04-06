@@ -2,11 +2,6 @@
 if($LANG_TAG == 'fr' || !file_exists($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/header.fr.php');
 else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 ?>
-<script type="text/javascript" src="<?php echo $CLIENT_ROOT; ?>/js/symb/base.js?ver=171023"></script>
-<script type="text/javascript">
-	//Uncomment following line to support toggling of database content containing DIVs with lang classes in form of: <div class="lang en">Content in English</div><div class="lang es">Content in Spanish</div>
-	setLanguageDiv();
-</script>
 <table id="maintable" cellspacing="0">
 	<tr>
 		<td id="header" colspan="3">
