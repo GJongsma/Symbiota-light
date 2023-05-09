@@ -22,9 +22,10 @@
 
 /* Global variables and components
    ========================================================================== */
-@import 'variables.css?ver=1';
-@import 'header.css?ver=1a';
-@import 'footer.css?ver=1';
+@import 'base.css';
+@import 'variables.css';
+@import 'header.css';
+@import 'footer.css';
 
 /* Global styles
    ========================================================================== */
