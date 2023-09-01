@@ -361,22 +361,24 @@ class OccurrenceTaxaManager {
 	}
 
 	public function getTaxaSearchTerm(){
-		if(isset($this->taxaArr['search'])) return $this->taxaArr['search'];
+		if(isset($this->taxaArr['search'])) return $this->cleanOutStr($this->taxaArr['search']);
 		return '';
 	}
 
 	protected function cleanOutStr($str){
+		if(strpos($str, '=') !== false) $str = '';
 		return htmlspecialchars($str);
 	}
 
 	protected function cleanInputStr($str){
 		if(stripos($str, 'sleep(') !== false) return '';
+		if(strpos($str, '=') !== false) return '';
 		$str = preg_replace('/%%+/', '%',$str);
 		$str = preg_replace('/^[\s%]+/', '',$str);
 		$str = trim($str,' ,;');
 		if($str == '%') $str = '';
 		$str = strip_tags($str);
-		$str = filter_var($str, FILTER_SANITIZE_STRING);
+		$str = htmlspecialchars($str, ENT_NOQUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 		return $str;
 	}
 
