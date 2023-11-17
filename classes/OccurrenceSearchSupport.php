@@ -135,7 +135,7 @@ class OccurrenceSearchSupport {
 								$catSelected = false;
 								if(!$catSelArr && !$collSelArr) $catSelected = true;
 								elseif(in_array($catid, $catSelArr)) $catSelected = true;
-								if($idStr == 8) $catSelected = false;
+								if(strpos($idStr, '-8')) $catSelected = false;
 								echo '<input data-role="none" id="cat-'.$idStr.'-Input" name="cat[]" value="'.$catid.'" type="checkbox" onclick="selectAllCat(this,\'cat-'.$idStr.'\')" '.($catSelected?'checked':'').' />';
 								?>
 							</div>
