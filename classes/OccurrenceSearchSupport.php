@@ -182,7 +182,7 @@ class OccurrenceSearchSupport {
 											?>
 											<td style="width:25px;padding-top:8px;">
 												<?php
-												echo '<input data-role="none" name="db[]" value="'.$collid.'" type="checkbox" class="cat-'.$idStr.'" onclick="unselectCat(\'cat-'.$idStr.'-Input\')" '.($catSelected || !$collSelArr || in_array($collid, $collSelArr)?'checked':'').' />';
+												echo '<input data-role="none" name="db[]" value="'.$collid.'" type="checkbox" class="cat-'.$idStr.'" onclick="unselectCat(\'cat-'.$idStr.'-Input\')" '.($catSelected || in_array($collid, $collSelArr)?'checked':'').' />';
 												?>
 											</td>
 											<td>
