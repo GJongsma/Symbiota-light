@@ -25,8 +25,7 @@ if($isEditor){
 	$annoArr = $datasetManager->getAnnoQueue();
 }
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
 		<title><?php echo $DEFAULT_TITLE.' '.$LANG['ANN_LAB_MAN']; ?></title>
@@ -92,20 +91,19 @@ if($isEditor){
 	include($SERVER_ROOT.'/includes/header.php');
 	?>
 	<div class='navpath'>
-		<a href='../../index.php'><?php echo htmlspecialchars($LANG['NAV_HOME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+		<a href='../../index.php'><?php echo $LANG['NAV_HOME']; ?></a> &gt;&gt;
 		<?php
 		if(stripos(strtolower($datasetManager->getMetaDataTerm('colltype')), "observation") !== false){
-			echo '<a href="../../profile/viewprofile.php?tabindex=1">' . htmlspecialchars($LANG['PERS_MAN_MEN'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> &gt;&gt; ';
+			echo '<a href="../../profile/viewprofile.php?tabindex=1">'.$LANG['PERS_MAN_MEN'].'</a> &gt;&gt; ';
 		}
 		else{
-			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&emode=1">' . htmlspecialchars($LANG['COL_MAN_PAN'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> &gt;&gt; ';
+			echo '<a href="../misc/collprofiles.php?collid='.$collid.'&emode=1">'.$LANG['COL_MAN_PAN'].'</a> &gt;&gt; ';
 		}
 		?>
 		<b><?php echo $LANG['ANN_LAB_PRINT']; ?></b>
 	</div>
 	<!-- This is inner text! -->
-	<div role="main" id="innertext">
-		<h1 class="page-heading"><?= $LANG['ANN_LAB_MAN']; ?></h1>
+	<div id="innertext">
 		<?php
 		if($isEditor){
 			$reportsWritable = false;
@@ -149,7 +147,7 @@ if($isEditor){
 											<?php echo $recArr['collector']; ?>
 										</a>
 										<a href="#" onclick="openEditorPopup(<?php echo $recArr['occid']; ?>); return false;">
-											<img src="../../images/edit.png" style="width:1.3em" />
+											<img src="../../images/edit.png" />
 										</a>
 									</td>
 									<td>
@@ -229,8 +227,8 @@ if($isEditor){
 				}
 				else{
 					?>
-					<div>
-						<b> <?php echo $LANG['NO_ANNO']; ?> </b>
+					<div style="font-weight:bold;margin:20px;font-weight:150%;">
+						<?php echo $LANG['NO_ANNO']; ?>
 					</div>
 					<?php
 				}
@@ -240,8 +238,8 @@ if($isEditor){
 		}
 		else{
 			?>
-			<div>
-				<b> <?php echo $LANG['NO_ANNO_PERMISSIONS']; ?> </b>
+			<div style="font-weight:bold;margin:20px;font-weight:150%;">
+				<?php echo $LANG['NO_ANNO_PERMISSIONS']; ?>
 			</div>
 			<?php
 		}

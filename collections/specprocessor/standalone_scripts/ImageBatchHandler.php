@@ -23,7 +23,7 @@ $imageProcessor = new ImageBatchProcessor();
 //Initiate log file
 if(isset($silent) && $silent) $logMode = 2;
 $imageProcessor->setLogMode($logMode);
-if(!$logProcessorPath && $LOG_PATH) $logProcessorPath = $LOG_PATH;
+if(!$logProcessorPath && $logPath) $logProcessorPath = $logPath;
 $imageProcessor->setLogPath($logProcessorPath);
 
 //Set remaining variables

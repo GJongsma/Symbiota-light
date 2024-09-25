@@ -54,19 +54,11 @@ function submitBatchUpdate(f){
 }
 
 function toggleSearch(){
-	const batchupdatediv = document.getElementById("batchupdatediv");
-
-	if(batchupdatediv){
-		document.getElementById("batchupdatediv").style.display = "none";
-	}
+	if(document.getElementById("batchupdatediv")) document.getElementById("batchupdatediv").style.display = "none";
 	toggle("querydiv");
 }
 
 function toggleBatchUpdate(){
-	const querydiv = document.getElementById("querydiv");
-	if(querydiv){
-		querydiv.style.display = "none";
-	}
-
+	document.getElementById("querydiv").style.display = "none";
 	toggle("batchupdatediv");
 }

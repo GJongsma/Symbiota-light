@@ -97,6 +97,5 @@ $LANG['METADATA'] = 'Métadonnées';
 $LANG['PUB_DATE'] = 'Date de Pub';
 $LANG['NO_PUBLISHABLE'] = "Il n'y a pas de collections publiables";
 $LANG['ADDIT_SOURCES'] = "Sources de données supplémentaires au sein du Réseau de Portails";
-$LANG['EDIT'] = 'Modifier';
 
 ?>

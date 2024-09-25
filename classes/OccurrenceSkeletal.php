@@ -170,12 +170,12 @@ class OccurrenceSkeletal {
 				$countryStr = 'United States';
 			}
 			else{
-				$sql = 'SELECT c.geoTerm AS countryName
-					FROM geographicthesaurus s INNER JOIN geographicthesaurus c ON s.parentID = c.geoThesID
-					WHERE s.geoTerm = "'.$state.'"';
+				$sql = 'SELECT c.countryname '.
+					'FROM lkupstateprovince s INNER JOIN lkupcountry c ON s.countryid = c.countryid '.
+					'WHERE s.statename = "'.$state.'"';
 				$rs = $this->conn->query($sql);
 				if($r = $rs->fetch_object()) {
-					$countryStr = $r->countryName;
+					$countryStr = $r->countryname;
 				}
 				$rs->free();
 			}

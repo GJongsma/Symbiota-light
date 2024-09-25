@@ -3,8 +3,7 @@ include_once('../config/symbini.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 include_once('content/lang/misc/aboutproject.'.$LANG_TAG.'.php');
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<title><?php echo (isset($LANG['CONTACTS'])?$LANG['CONTACTS']:'Contacts'); ?></title>
 		<?php
@@ -22,8 +21,8 @@ include_once('content/lang/misc/aboutproject.'.$LANG_TAG.'.php');
 			<b><?php echo (isset($LANG['CONTACTS'])?$LANG['CONTACTS']:'Contacts'); ?></b>
 		</div>
 		<!-- This is inner text! -->
-		<div role="main" id="innertext" style="margin:10px 20px">
-			<h1 class="page-heading"><?php echo $LANG['CONTACTS']; ?>:</h1>
+		<div id="innertext" style="margin:10px 20px">
+			<h1><?php echo (isset($LANG['CONTACTS'])?$LANG['CONTACTS']:'Contacts'); ?>:</h1>
 
 			<p></p>
 

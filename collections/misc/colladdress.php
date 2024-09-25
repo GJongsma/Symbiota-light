@@ -39,16 +39,15 @@ if($isEditor){
 $collData = current($collManager->getCollectionMetadata());
 $collManager->cleanOutArr($collData);
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
-	<title><?php echo $DEFAULT_TITLE." " . ($collid?$collData["collectionname"]:"") . ' '. $LANG['MAILING_ADD']; ?></title>
+	<title><?php echo $DEFAULT_TITLE." ".($collid?$collData["collectionname"]:"").' '.(isset($LANG['MAILING_ADD'])?$LANG['MAILING_ADD']:'Mailing Address'); ?></title>
 	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="../../js/jquery.js" type="text/javascript"></script>
+	<script src="../../js/jquery-ui.js" type="text/javascript"></script>
 	<script>
 
 		$(function() {
@@ -222,15 +221,14 @@ $collManager->cleanOutArr($collData);
 	echo '<div class="navpath">';
 	echo '<a href="../../index.php">Home</a> &gt;&gt; ';
 	if($collid){
-		echo '<a href="collprofiles.php?collid=' . htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&emode=1">' . htmlspecialchars((isset($LANG['COL_MGMNT'])?$LANG['COL_MGMNT']:'Collection Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> &gt;&gt; ';
+		echo '<a href="collprofiles.php?collid='.$collid.'&emode=1">'.(isset($LANG['COL_MGMNT'])?$LANG['COL_MGMNT']:'Collection Management').'</a> &gt;&gt; ';
 		echo '<b>'.$collData['collectionname'].' '.(isset($LANG['MAILING_ADD'])?$LANG['MAILING_ADD']:'Mailing Address').' </b>';
 	}
 	else echo '<b>'.(isset($LANG['MAILING_ADDS'])?$LANG['MAILING_ADDS']:'Mailing Addresses').'</b>';
 	echo '</div>';
 	?>
 	<!-- This is inner text! -->
-	<div role="main" id="innertext">
-		<h1 class="page-heading"><?php echo ($collid?$collData["collectionname"]:"") . ' '. $LANG['MAILING_ADD']; ?></h1>
+	<div id="innertext">
 		<?php
 		if($statusStr){
 			?>
@@ -255,11 +253,11 @@ $collManager->cleanOutArr($collData);
 							echo '<div>';
 							echo $instArr['institutionname'].($instArr['institutioncode']?' ('.$instArr['institutioncode'].')':'');
 							?>
-							<a href="institutioneditor.php?emode=1&targetcollid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&iid=' . htmlspecialchars($instArr['iid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" title="<?php echo htmlspecialchars((isset($LANG['EDIT_ADD'])?$LANG['EDIT_ADD']:'Edit Institution Address'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
-								<img src="../../images/edit.png" style="width:1.3em" />
+							<a href="institutioneditor.php?emode=1&targetcollid=<?php echo $collid.'&iid='.$instArr['iid']; ?>" title="<?php echo (isset($LANG['EDIT_ADD'])?$LANG['EDIT_ADD']:'Edit Institution Address'); ?>">
+								<img src="../../images/edit.png" style="width:14px;" />
 							</a>
-							<a href="collmetadata.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&removeiid=' . htmlspecialchars($instArr['iid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" title="<?php echo htmlspecialchars((isset($LANG['UNLINK_ADD'])?$LANG['UNLINK_ADD']:'Unlink institution address'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
-								<img src="../../images/drop.png" style="width:1.3em" />
+							<a href="collmetadata.php?collid=<?php echo $collid.'&removeiid='.$instArr['iid']; ?>" title="<?php echo (isset($LANG['UNLINK_ADD'])?$LANG['UNLINK_ADD']:'Unlink institution address'); ?>">
+								<img src="../../images/drop.png" style="width:14px;" />
 							</a>
 							<?php
 							echo '</div>';
@@ -270,7 +268,7 @@ $collManager->cleanOutArr($collData);
 							if($instArr['phone']) echo '<div>'.$instArr['phone'].'</div>';
 							if($instArr['contact']) echo '<div>'.$instArr['contact'].'</div>';
 							if($instArr['email']) echo '<div>'.$instArr['email'].'</div>';
-							if($instArr['url']) echo '<div><a href="' . htmlspecialchars($instArr['url'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($instArr['url'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a></div>';
+							if($instArr['url']) echo '<div><a href="'.$instArr['url'].'">'.$instArr['url'].'</a></div>';
 							if($instArr['notes']) echo '<div>'.$instArr['notes'].'</div>';
 							?>
 						</div>
@@ -296,7 +294,7 @@ $collManager->cleanOutArr($collData);
 								<input name="action" type="submit" value="Link Address" />
 							</form>
 							<div style="margin:15px;">
-								<a href="institutioneditor.php?emode=1&targetcollid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" title="Add a new address not on the list">
+								<a href="institutioneditor.php?emode=1&targetcollid=<?php echo $collid; ?>" title="Add a new address not on the list">
 									<b><?php echo (isset($LANG['ADD_INST'])?$LANG['ADD_INST']:'Add an institution not on list'); ?></b>
 								</a>
 							</div>

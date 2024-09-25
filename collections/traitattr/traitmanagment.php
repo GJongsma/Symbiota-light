@@ -39,16 +39,15 @@ if($isEditor){
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<title>Occurrence Attribute Mining Tool</title>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
-		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="../../js/jquery.js" type="text/javascript"></script>
+		<script src="../../js/jquery-ui.js" type="text/javascript"></script>
 		<script type="text/javascript">
 
 		</script>
@@ -61,7 +60,7 @@ if($isEditor){
 		?>
 		<div class="navpath">
 			<a href="../../index.php">Home</a> &gt;&gt;
-			<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&emode=1">Collection Management</a> &gt;&gt;
+			<a href="../misc/collprofiles.php?collid=<?php echo $collid; ?>&emode=1">Collection Management</a> &gt;&gt;
 			<b>Attribute Mining Tool</b>
 		</div>
 		<?php
@@ -72,8 +71,8 @@ if($isEditor){
 		}
 		?>
 		<!-- This is inner text! -->
-		<div role="main" id="innertext">
-			<h1 class="page-heading screen-reader-only">Trait Management Tools</h1>
+		<div id="innertext">
+
 		</div>
 	</body>
 </html>

@@ -5,7 +5,7 @@ Language: Español (Spanish)
 ------------------
 */
 
-$LANG['PERS_SPEC_BACKUP'] = 'Copia de Seguridad de Registros Personales';
+$LANG['PERS_SPEC_BACKUP'] = 'Respaldo Personal de Especímenes';
 $LANG['BACK_COMPLETE'] = 'Respaldo Completo';
 $LANG['CLICK'] = 'Haga click en el archivo para descargar';
 $LANG['DOWNLOAD_MOD'] = 'Módulo de Descarga';

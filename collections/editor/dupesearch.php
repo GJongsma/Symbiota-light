@@ -5,12 +5,12 @@ if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/edit
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/dupesearch.en.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
-$occidQuery = array_key_exists('occidquery',$_REQUEST) ? htmlspecialchars($_REQUEST['occidquery'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
-$curOccid = (array_key_exists('curoccid',$_GET) ? filter_var($_REQUEST['curoccid'], FILTER_SANITIZE_NUMBER_INT) : 0);
-$collId = (array_key_exists('collid',$_GET) ? filter_var($_GET['collid'], FILTER_SANITIZE_NUMBER_INT) : 0);
+$occidQuery = array_key_exists('occidquery',$_REQUEST)?$_REQUEST['occidquery']:'';
+$curOccid = (array_key_exists('curoccid',$_GET)?$_REQUEST['curoccid']:0);
+$collId = (array_key_exists('collid',$_GET)?$_GET['collid']:0);
 
-$occIdMerge = (array_key_exists('occidmerge',$_GET) ? filter_var($_GET['occidmerge'], FILTER_SANITIZE_NUMBER_INT) : 0);
-$submitAction = (array_key_exists('submitaction',$_GET) ? $_GET['submitaction'] : '');
+$occIdMerge = (array_key_exists('occidmerge',$_GET)?$_GET['occidmerge']:0);
+$submitAction = (array_key_exists('submitaction',$_GET)?$_GET['submitaction']:'');
 
 $dupeManager = new OccurrenceDuplicate();
 
@@ -32,20 +32,10 @@ if($submitAction){
 	}
 	if($isEditor){
 		if($submitAction == 'mergerecs'){
-			if(!$dupeManager->mergeRecords($occIdMerge,$curOccid, $collId)){
+			if(!$dupeManager->mergeRecords($occIdMerge,$curOccid)){
 				$statusStr = $dupeManager->getErrorStr();
-
-				//Add a unknown error message to user if no error is given
-				if(empty($statusStr)) {
-					$statusStr = $LANG['UNKNOWN_ERROR_WHILE_MERGING'];
-				}
-				//Fetch Occurrences Again for error display
-				$occArr = $dupeManager->getDupesOccid(substr($occidQuery,6));
-				unset($occArr[$curOccid]);
-			} else {
-				//Re route to merged occid if sucessful
-				$onLoadStr = 'gotoMergedOccur(' . $occIdMerge . ');';
 			}
+			$onLoadStr = 'reloadParent();close()';
 		}
 	}
 }
@@ -60,8 +50,7 @@ if(!$IS_ADMIN){
 	}
 }
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<title><?php echo $DEFAULT_TITLE; ?> - Duplicate Record Search</title>
 		<?php
@@ -125,17 +114,20 @@ if(!$IS_ADMIN){
 				window.close();
 			}
 
-			function gotoMergedOccur(occIdMerge){
+			function reloadParent(){
 				opener.pendingDataEdits = false;
 				var qForm = opener.document.queryform;
-				qForm.occid.value = occIdMerge;
-				if(opener.document.fullform.occindex) {
-					qForm.occindex.value = opener.document.fullform.occindex.value;
-				}
-
-				alert("<?= $LANG['CHECK_DETERMINATIONS_ALERT']?>");
+				qForm.occid.value = <?php echo $occIdMerge; ?>;
+				if(opener.document.fullform.occindex) qForm.occindex.value = opener.document.fullform.occindex.value;
 				opener.document.queryform.submit();
-				window.close();
+				//opener.location.reload();
+				<?php
+				if($statusStr === true){
+					?>
+					window.close();
+					<?php
+				}
+				?>
 			}
 
 		</script>
@@ -143,9 +135,8 @@ if(!$IS_ADMIN){
 			table.styledtable td { white-space: nowrap; }
 		</style>
 	</head>
-	<body onload="<?php echo $onLoadStr; ?>">
-		<div role="main" id="innertext">
-			<h1 class="page-heading">Duplicate Record Search</h1>
+	<body onload="<?php echo $onLoadStr; ?>" style="background-color:white;">
+		<div id="innertext">
 			<?php
 			if($statusStr){
 				?>
@@ -178,7 +169,7 @@ if(!$IS_ADMIN){
 				/*
 				?>
 				<div id="tableview" style="display:none;">
-					<table class="styledtable" style="font-size:12px;">
+					<table class="styledtable" style="font-family:Arial;font-size:12px;">
 						<tr>
 							<th>&nbsp;</th>
 							<th>&nbsp;</th>
@@ -204,14 +195,14 @@ if(!$IS_ADMIN){
 								<td>
 									<?php
 									if($curOccid){
-										echo '<a href="dupesearch.php?submitaction=mergerecs&curoccid=' .htmlspecialchars($curOccid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&occidmerge=' . htmlspecialchars($id, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&collid=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" onclick="return confirm(\'Are you sure you want to merge these two records?\')">Merge</a>';
+										echo '<a href="dupesearch.php?submitaction=mergerecs&curoccid='.$curOccid.'&occidmerge='.$id.'&collid='.$collId.'" onclick="return confirm(\'Are you sure you want to merge these two records?\')">Merge</a>';
 									}
 									?>
 								</td>
 								<td>
 									<?php
 									if($collId == $oArr['collid']){
-										echo '<a href="occurrenceeditor.php?occid=' . htmlspecialchars($occId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '"><img src="../../images/edit.png" /></a>';
+										echo '<a href="occurrenceeditor.php?occid='.$occId.'"><img src="../../images/edit.png" /></a>';
 									}
 									?>
 								</td>
@@ -236,8 +227,8 @@ if(!$IS_ADMIN){
 							//User can edit this specimen
 							?>
 							<div style="float:right;margin:10px;">
-								<a href="occurrenceeditor.php?occid=<?php echo htmlspecialchars($occId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
-									<img src="../../images/edit.png" style="width:1.2em" />
+								<a href="occurrenceeditor.php?occid=<?php echo $occId; ?>">
+									<img src="../../images/edit.png" />
 								</a>
 							</div>
 							<?php
@@ -361,15 +352,14 @@ if(!$IS_ADMIN){
 							if(!isset($ACTIVATE_DUPLICATES) || $ACTIVATE_DUPLICATES){
 								?>
 								<div style="margin-left:30px;float:left;">
-									<input id="linkdupe-<?php echo $occId; ?>" type="checkbox" <?php echo ($dupeType == 'exact'?'checked':''); ?> /> 
-									<label for="linkdupe-<?php echo $occId; ?>"><?php echo $LANG['LINK_DUPE']; ?></label>
+									<input id="linkdupe-<?php echo $occId; ?>" type="checkbox" <?php echo ($dupeType == 'exact'?'checked':''); ?> /> <?php echo $LANG['LINK_DUPE']; ?>
 								</div>
 								<?php
 							}
 							if($collId == $occObj['collid']){
 								?>
 								<div style="margin-left:30px;float:left;">
-									<a href="occurrenceeditor.php?occid=<?php echo htmlspecialchars($occId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<a href="occurrenceeditor.php?occid=<?php echo $occId; ?>">
 										<?php echo $LANG['GO_TO_RECORD']; ?>
 									</a>
 								</div>
@@ -377,14 +367,8 @@ if(!$IS_ADMIN){
 								if($curOccid){
 									?>
 									<div style="margin-left:30px;float:left;">
-						<a href="dupesearch.php?submitaction=mergerecs&curoccid=<?php echo htmlspecialchars($curOccid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&occidmerge=' . htmlspecialchars($occId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&collid=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&occidquery=' . htmlspecialchars($occidQuery, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); 
-							?>" onclick="return confirm('<?php echo htmlspecialchars($LANG['SURE_MERGE'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>')">
+										<a href="dupesearch.php?submitaction=mergerecs&curoccid=<?php echo $curOccid.'&occidmerge='.$occId.'&collid='.$collId; ?>" onclick="return confirm('<?php echo $LANG['SURE_MERGE']; ?>')">
 											<?php echo $LANG['MERGE_RECORDS']; ?>
-										</a>
-									</div>
-									<div style="margin-left:5px;float:left;">
-										<a href="https://biokic.github.io/symbiota-docs/editor/edit/duplicates/#merge-records" id="mergeduplicateinfo" style="text-decoration:none;">
-											<img src="../../images/info.png" style="width:1.3em;" alt="<?php echo $LANG['MORE_INFO_ALT']; ?>" title="<?php echo $LANG['MORE_INFO']; ?>" aria-label="<?php echo $LANG['MORE_INFO']; ?>"/>
 										</a>
 									</div>
 									<?php

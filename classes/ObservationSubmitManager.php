@@ -29,25 +29,22 @@ class ObservationSubmitManager {
 				$eventDay = date('d',$dateObj);
 				$startDay = date('z',$dateObj)+1;
 			}
-			//Get tid for scientific name
+			//Get tid for scinetific name
 			$tid = 0;
-			$localitySecurity = (array_key_exists('localitysecurity', $postArr) ? 1 : 0);
+			$localitySecurity = (array_key_exists('localitysecurity',$postArr)?1:0);
 			if($postArr['sciname']){
 				$result = $this->conn->query('SELECT tid, securitystatus FROM taxa WHERE (sciname = "'.$postArr['sciname'].'")');
 				if($row = $result->fetch_object()){
 					$tid = $row->tid;
-					if(empty($postArr['cultivationstatus'])){
-						//Set localitySecurity based on global or state protection setting, but only if not cultivated
-						if($row->securitystatus > 0) $localitySecurity = $row->securitystatus;
-						if(!$localitySecurity){
-							//Check to see if species is rare or sensitive within a state
-							$sql = 'SELECT cl.tid
-								FROM fmchecklists c INNER JOIN fmchklsttaxalink cl ON c.clid = cl.clid
-								WHERE c.type = "rarespp" AND c.locality = "'.$postArr['stateprovince'].'" AND cl.tid = '.$tid;
-							$rs = $this->conn->query($sql);
-							if($rs->num_rows){
-								$localitySecurity = 1;
-							}
+					if($row->securitystatus > 0) $localitySecurity = $row->securitystatus;
+					if(!$localitySecurity){
+						//Check to see if species is rare or sensitive within a state
+						$sql = 'SELECT cl.tid '.
+							'FROM fmchecklists c INNER JOIN fmchklsttaxalink cl ON c.clid = cl.clid '.
+							'WHERE c.type = "rarespp" AND c.locality = "'.$postArr['stateprovince'].'" AND cl.tid = '.$tid;
+						$rs = $this->conn->query($sql);
+						if($rs->num_rows){
+							$localitySecurity = 1;
 						}
 					}
 				}

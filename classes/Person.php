@@ -203,16 +203,10 @@ class Person{
 	}
 
 	private function cleanOutStr($str){
-		if($str !== null){
-			$quoteReplacements = ['"' => '&quot;'];
-			$newStr = strtr($str, $quoteReplacements);
-			$apoReplacements = ["'" => '&apos;'];
-			$newStr = strtr($newStr, $apoReplacements);
-			return $newStr;
-		} else{
-			return '';
-		}
+		$newStr = str_replace('"',"&quot;",$str);
+		$newStr = str_replace("'","&apos;",$newStr);
+		//$newStr = $this->con->real_escape_string($newStr);
+		return $newStr;
 	}
-
 }
 ?>

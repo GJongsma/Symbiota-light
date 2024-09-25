@@ -356,10 +356,10 @@ class OccurrenceDuplicate {
 			$result = $this->conn->query($sql);
 			while($row = $result->fetch_assoc()) {
 				foreach($row as $k => $v){
-					if($v) $v = trim($v);
-					$retArr[$row['occid']][$k] = $v;
+					$vStr = trim($v);
+					$retArr[$row['occid']][$k] = $vStr;
 					//Identify relevant fields
-					if($v) $relArr[$k] = '';
+					if($vStr) $relArr[$k] = '';
 				}
 			}
 			$result->free();
@@ -492,12 +492,16 @@ class OccurrenceDuplicate {
 
 
 	//Action functions
-	public function mergeRecords($targetOccid, $sourceOccid, $collId){
+	public function mergeRecords($targetOccid,$sourceOccid){
 		$status = true;
 		$editorManager = new OccurrenceEditorManager($this->conn);
-		$editorManager->setCollId($collId);
-		if(!$editorManager->mergeRecords($targetOccid,$sourceOccid)){
-			$this->errorStr = $editorManager->getErrorStr();
+		if($editorManager->mergeRecords($targetOccid,$sourceOccid)){
+			if(!$editorManager->deleteOccurrence($sourceOccid)){
+				$this->errorStr = trim($editorManager->getErrorStr(),' ;');
+			}
+		}
+		else{
+			$this->errorStr = $editorManager->getErrorStr;
 			$status = false;
 		}
 		return $status;
@@ -622,7 +626,6 @@ class OccurrenceDuplicate {
 				if(preg_match('#\d#',$recNum)){
 					$lastName = $this->parseLastName($r2->recordedby);
 					if(strpos($lastName,'.')) $lastName = $r2->recordedby;
-					$lastName = substr($lastName, 0, 25);
 					if(isset($lastName) && $lastName && !preg_match('#\d#',$lastName)){
 						$rArr[$recNum][$lastName][$r2->dupid][] = $r2->occid;
 						if($r2->collid == $collid && (!$this->obsUid || $r2->observeruid == $this->obsUid)) $keepArr[$recNum][$lastName] = 1;
@@ -654,7 +657,8 @@ class OccurrenceDuplicate {
 						$dupId = 0;
 						if($mArr) $dupId = key($mArr);
 						if(!$dupId){
-							$sqlI1 = 'INSERT IGNORE INTO omoccurduplicates(title,dupetype) VALUES("'.$this->cleanInStr($dupIdStr).'",1)';
+							//Create a new dupliate project
+							$sqlI1 = 'INSERT INTO omoccurduplicates(title,dupetype) VALUES("'.$this->cleanInStr($dupIdStr).'",1)';
 							if($this->conn->query($sqlI1)){
 								$dupId = $this->conn->insert_id;
 								if($verbose) echo '<li style="margin-left:20px;">New duplicate project created: #'.$dupId.'</li>';
@@ -674,7 +678,7 @@ class OccurrenceDuplicate {
 							$sqlI2 = 'INSERT INTO omoccurduplicatelink(duplicateid,occid) VALUES ';
 							foreach($unlinkedArr as $v){
 								$sqlI2 .= '('.$dupId.','.$v.'),';
-								$outLink .= ' <a href="../individual/index.php?occid=' . htmlspecialchars($v, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($v, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>,';
+								$outLink .= ' <a href="../individual/index.php?occid='.$v.'" target="_blank">'.$v.'</a>,';
 							}
 							if($this->conn->query(trim($sqlI2,','))){
 								if($verbose) echo '<li style="margin-left:20px;">'.count($unlinkedArr).' duplicates linked ('.trim($outLink,' ,').')</li>';

@@ -3,9 +3,7 @@
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyCleaner.php');
 header("Content-Type: text/html; charset=".$CHARSET);
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomycleaner.' . $LANG_TAG . '.php'))
-	include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomycleaner.' . $LANG_TAG . '.php');
-	else include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomycleaner.en.php');
+include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomycleaner.'.$LANG_TAG.'.php');
 
 $collId = $_REQUEST['collid'];
 $displayIndex = array_key_exists('displayindex',$_REQUEST)?$_REQUEST['displayindex']:0;
@@ -52,10 +50,9 @@ else{
 $status = "";
 
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
-		<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['TAX_NAME_CLEANER']; ?></title>
+		<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['TAX_NAME_CLEANER'])?$LANG['TAX_NAME_CLEANER']:'Taxonomic Name Cleaner'); ?></title>
 		<?php
 
 		include_once($SERVER_ROOT.'/includes/head.php');
@@ -98,14 +95,13 @@ $status = "";
 			?>
 			<div class='navpath'>
 				<?php echo $taxa_admin_taxonomycleanerCrumbs; ?>
-				<b><?php echo $LANG['TAX_NAME_CLEANER']; ?></b>
+				<b><?php echo (isset($LANG['TAX_NAME_CLEANER'])?$LANG['TAX_NAME_CLEANER']:'Taxonomic Name Cleaner'); ?></b>
 			</div>
 			<?php
 		}
 		?>
 		<!-- inner text block -->
-		<div role="main" id="innertext">
-			<h1 class="page-heading"><?php echo $LANG['TAX_THES_VALIDATOR']; ?></h1>
+		<div id="innertext">
 			<?php
 			if($SYMB_UID){
 				if($status){
@@ -122,31 +118,31 @@ $status = "";
 						?>
 						<h1><?php echo $collName; ?></h1>
 						<div>
-							<?php echo $LANG['TAX_CLEANER_EXPLAIN']; ?>
+							<?php echo (isset($LANG['TAX_CLEANER_EXPLAIN'])?$LANG['TAX_CLEANER_EXPLAIN']:'This module is designed to aid in cleaning scientific names that are not mapping to the taxonomic thesaurus. Unmapped names are likely due to misspelllings, illegidimate names, or simply because they just have not yet been added to the thesaurus.'); ?>
 						</div>
 						<div>
-							<?php echo $LANG['NUMBER_MISMAPPED'] . ": " . $cleanManager->getTaxaCount(); ?>
+							<?php echo (isset($LANG['NUMBER_MISMAPPED'])?$LANG['NUMBER_MISMAPPED']:'Number of mismapped names').": ".$cleanManager->getTaxaCount(); ?>
 						</div>
 						<?php
 						if(!$action){
 							?>
 							<form name="occurmainmenu" action="taxonomycleaner.php" method="post">
 								<fieldset>
-									<legend><b><?php echo $LANG['MAIN_MENU']; ?></b></legend>
+									<legend><b><?php echo (isset($LANG['MAIN_MENU'])?$LANG['MAIN_MENU']:'Main Menu'); ?></b></legend>
 									<div>
 										<input type="radio" name="submitaction" value="displaynames" />
-										<?php echo $LANG['DISPLAY_UNVERIFIED']; ?>
-										<div style="margin-left:15px;"><?php echo $LANG['START_INDEX']; ?>:
+										<?php echo (isset($LANG['DISPLAY_UNVERIFIED'])?$LANG['DISPLAY_UNVERIFIED']:'Display unverified names'); ?>
+										<div style="margin-left:15px;"><?php echo (isset($LANG['START_INDEX'])?$LANG['START_INDEX']:'Start index'); ?>:
 											<input name="displayindex" type="text" value="0" style="width:25px;" />
-											<?php echo $LANG['500_NAMES']; ?>
+											<?php echo (isset($LANG['500_NAMES'])?$LANG['500_NAMES']:'(500 names at a time)'); ?>
 										</div>
 									</div>
 									<div>
 										<input type="radio" name="submitaction" value="analyzenames" />
-										<?php echo $LANG['ANALYZE_NAMES']; ?>
-										<div style="margin-left:15px;"><?php echo $LANG['START_INDEX']; ?>:
+										<?php echo (isset($LANG['ANALYZE_NAMES'])?$LANG['ANALYZE_NAMES']:'analyze names'); ?>
+										<div style="margin-left:15px;"><?php echo (isset($LANG['START_INDEX'])?$LANG['START_INDEX']:'Start index'); ?>:
 											<input name="analyzeindex" type="text" value="0" style="width:25px;" />
-											<?php echo $LANG['10_NAMES']; ?>
+											<?php echo (isset($LANG['10_NAMES'])?$LANG['10_NAMES']:'(10 names at a time)'); ?>
 										</div>
 									</div>
 									<div>
@@ -162,7 +158,7 @@ $status = "";
 							echo '<ul>';
 							foreach($nameArr as $k => $sciName){
 								echo '<li>';
-								echo '<a href="spectaxcleaner.php?submitaction=analyzenames&analyzeindex=' . htmlspecialchars($k, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">';
+								echo '<a href="spectaxcleaner.php?submitaction=analyzenames&analyzeindex='.$k.'">';
 								echo '<b><i>'.$sciName.'</i></b>';
 								echo '</a>';
 								echo '</li>';
@@ -180,8 +176,8 @@ $status = "";
 								else{
 									echo '<div style="margin-left:15px;font-weight:bold;">';
 									echo '<form name="taxaremapform" method="get" action="" >';
-									echo $LANG['REMAP_TO'] . ': ';
-									echo '<input type="input" name="remaptaxon" value="' . $sn . '" />';
+									echo (isset($LANG['REMAP_TO'])?$LANG['REMAP_TO']:'Remap to').': ';
+									echo '<input type="input" name="remaptaxon" value="'.$sn.'" />';
 									echo '<input type="submit" name="submitaction" value="Remap" />';
 									echo '</form>';
 									echo '</div>';
@@ -189,7 +185,7 @@ $status = "";
 										foreach($snArr['soundex'] as $t => $s){
 											echo '<div style="margin-left:15px;font-weight:bold;">';
 											echo $s;
-											echo ' <a href="" title="' . htmlspecialchars($LANG['REMAP_TO_NAME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '...">==>></a>';
+											echo ' <a href="" title="'.(isset($LANG['REMAP_TO_NAME'])?$LANG['REMAP_TO_NAME']:'Remap to this name').'...">==>></a>';
 											echo '</div>';
 										}
 									}
@@ -200,15 +196,16 @@ $status = "";
 					}
 					else{
 						?>
+						<h1><?php echo (isset($LANG['TAX_THES_VALIDATOR'])?$LANG['TAX_THES_VALIDATOR']:'Taxonomic Thesaurus Validator'); ?></h1>
 						<div style="margin:15px;">
-							<?php echo $LANG['VALIDATOR_EXPLAIN']; ?>.
+							<?php echo (isset($LANG['VALIDATOR_EXPLAIN'])?$LANG['VALIDATOR_EXPLAIN']:'This module is designed to aid in validating scientific names within the taxonomic thesauri'); ?>.
 						</div>
 						<?php
 						$taxonomyAction = array_key_exists('taxonomysubmit',$_POST)?$_POST['taxonomysubmit']:'';
 						if($taxonomyAction == 'Validate Names'){
 							?>
 							<div style="margin:15px;">
-								<b><?php echo $LANG['VAL_STATUS']; ?>:</b>
+								<b><?php echo (isset($LANG['VAL_STATUS'])?$LANG['VAL_STATUS']:'Validation Status'); ?>:</b>
 								<ul>
 									<?php //$cleanManager->verifyTaxa($_POST['versource']); ?>
 								</ul>
@@ -218,28 +215,28 @@ $status = "";
 						?>
 						<div style="margin:15px;">
 							<fieldset>
-								<legend><b><?php echo $LANG['VER_STATUS']; ?></b></legend>
+								<legend><b><?php echo (isset($LANG['VER_STATUS'])?$LANG['VER_STATUS']:'Verification Status'); ?></b></legend>
 								<?php
 								$vetArr = $cleanManager->getVerificationCounts();
 								?>
-								<?php echo $LANG['FULL_VER'] . ': ' . $vetArr[1]; ?><br/>
-								<?php echo $LANG['SUSPECT_STATUS'] . ': ' . $vetArr[2]; ?><br/>
-								<?php echo $LANG['VALIDATE_ONLY'] . ': ' . $vetArr[3]; ?><br/>
-								<?php echo $LANG['UNTESTED'] . ': ' . $vetArr[0]; ?>
+								<?php echo (isset($LANG['FULL_VER'])?$LANG['FULL_VER']:'Full Verification').': '.$vetArr[1]; ?><br/>
+								<?php echo (isset($LANG['SUSPECT_STATUS'])?$LANG['SUSPECT_STATUS']:'Suspect Status').': '.$vetArr[2]; ?><br/>
+								<?php echo (isset($LANG['VALIDATE_ONLY'])?$LANG['VALIDATE_ONLY']:'Name Validated Only').': '.$vetArr[3]; ?><br/>
+								<?php echo (isset($LANG['UNTESTED'])?$LANG['UNTESTED']:'Untested').': '.$vetArr[0]; ?>
 							</fieldset>
 						</div>
 						<div style="margin:15px;">
 							<form name="taxonomymainmenu" action="taxonomycleaner.php" method="post">
 								<fieldset>
-									<legend><b><?php echo $LANG['MAIN_MENU']; ?></b></legend>
+									<legend><b><?php echo (isset($LANG['MAIN_MENU'])?$LANG['MAIN_MENU']:'Main Menu'); ?></b></legend>
 									<div>
-										<b><?php echo $LANG['TESTING_RESOURCE']; ?>:</b><br/>
+										<b><?php echo (isset($LANG['TESTING_RESOURCE'])?$LANG['TESTING_RESOURCE']:'Testing Resource'); ?>:</b><br/>
 										<input type="radio" name="versource" value="col" CHECKED />
-										<?php echo $LANG['CAT_OF_LIFE']; ?><br/>
+										<?php echo (isset($LANG['CAT_OF_LIFE'])?$LANG['CAT_OF_LIFE']:'Catalogue of Life'); ?><br/>
 									</div>
 									<div>
 										<input type="hidden" name="taxauthid" value="<?php echo $taxAuthId; ?>" />
-										<button type="submit" name="taxonomysubmit" value="Validate Names" ><?php echo $LANG['VALIDATE_NAMES']; ?></button>
+										<button type="submit" name="taxonomysubmit" value="Validate Names" ><?php echo (isset($LANG['VALIDATE_NAMES'])?$LANG['VALIDATE_NAMES']:'Validate Names'); ?></button>
 									</div>
 								</fieldset>
 							</form>
@@ -250,7 +247,7 @@ $status = "";
 				else{
 					?>
 					<div style="margin:20px;font-weight:bold;font-size:120%;">
-						<?php echo $LANG['ERROR_NOPERM']; ?>.
+						<?php echo (isset($LANG['ERROR_NOPERM'])?$LANG['ERROR_NOPERM']:'ERROR: You don\'t have the necessary permissions to access this data cleaning module'); ?>.
 					</div>
 					<?php
 				}
@@ -258,7 +255,7 @@ $status = "";
 			else{
 				?>
 				<div style="font-weight:bold;">
-					<?php echo $LANG['PLEASE'] . "<a href='../../profile/index.php?refurl=" . htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "/taxa/taxonomy/taxonomycleaner.php?collid=" . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . ">" . htmlspecialchars($LANG['LOGIN'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "</a>!" ?>
+					<?php echo (isset($LANG['PLEASE'])?$LANG['PLEASE']:'Please')."<a href='../../profile/index.php?refurl=".$CLIENT_ROOT."/taxa/taxonomy/taxonomycleaner.php?collid=".$collId.">".(isset($LANG['LOGIN'])?$LANG['LOGIN']:'log in')."</a>!" ?>
 				</div>
 				<?php
 			}

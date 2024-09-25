@@ -1,10 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT . '/classes/OccurrenceLoans.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.en.php');
+include_once($SERVER_ROOT.'/classes/OccurrenceLoans.php');
 header("Content-Type: text/html; charset=".$CHARSET);
-if(!$SYMB_UID) header('Location: ' . $CLIENT_ROOT . '/profile/index.php?refurl=../collections/loans/specimennotes.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
+if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../collections/loans/specimennotes.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
 $collid = $_REQUEST['collid'];
 $occid = $_REQUEST['occid'];
@@ -26,17 +24,16 @@ if($SYMB_UID && $collid){
 $loanManager = new OccurrenceLoans();
 $loanManager->setCollId($collid);
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
-	<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['LOAN_NOTES_EDITOR']; ?></title>
+	<title><?php echo $DEFAULT_TITLE; ?> Loan Specimen Notes Editor</title>
 	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
-	include_once($SERVER_ROOT . '/includes/head.php');
+	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../js/jquery.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.js"></script>
 	<script type="text/javascript">
 		function submitNotesForm(f){
 			self.close();
@@ -50,19 +47,20 @@ $loanManager->setCollId($collid);
 </head>
 <body>
 	<!-- This is inner text! -->
-	<div id="popup-innertext" class="left-breathing-room-rel">
-		<h1 class="page-heading"><?= $LANG['LOAN_NOTES_EDITOR']; ?></h1>
+	<div id="popup-innertext">
 		<?php
 		if($isEditor && $collid){
 			$noteArr = $loanManager->getSpecimenDetails($loanID, $occid)
 			?>
+			<fieldset class="notesDiv" >
+				<legend>Loan Specimen Editor</legend>
 				<form name="noteEditor" action="outgoing.php" method="post" target="parentWin" onsubmit="submitNotesForm()">
 					<div>
-						<b><?php echo $LANG['DATE_RETURNED']; ?>:</b>
+						<b>Date returned:</b>
 						<input name="returndate" type="datetime-local" value="<?php echo $noteArr['returnDate']; ?>" />
 					</div>
 					<div>
-						<b><?php echo $LANG['SPEC_NOTES']; ?>:</b>
+						<b>Specimen notes:</b>
 						<input name="notes" type="text" value="<?php echo $noteArr['notes']; ?>" style="width:100%" />
 					</div>
 					<div>
@@ -70,14 +68,15 @@ $loanManager->setCollId($collid);
 						<input name="occid" type="hidden" value="<?php echo $occid; ?>" />
 						<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 						<input name="tabindex" type="hidden" value="1" />
-						<button name="formsubmit" type="submit" value="saveSpecimenDetails"><?php echo $LANG['SAVE_EDITS']; ?></button>
+						<button name="formsubmit" type="submit" value="saveSpecimenDetails">Save Edits</button>
 					</div>
 				</form>
+			</fieldset>
 			<?php
 		}
 		else{
-			if(!$isEditor) echo '<h2>' . $LANG['NOT_AUTH_LOANS'] . '</h2>';
-			else echo '<h2>' . $LANG['UNKNOWN_ERROR'] . '</h2>';
+			if(!$isEditor) echo '<h2>You are not authorized to manage loans for this collection</h2>';
+			else echo '<h2>ERROR: unknown error, please contact system administrator</h2>';
 		}
 		?>
 	</div>

@@ -307,10 +307,21 @@ class EOLUtilities {
 
 	//Misc functions
 	private function encodeString($inStr){
- 		$retStr = $inStr;
- 		if($inStr){
- 			$retStr = trim($inStr);
- 			$retStr = mb_convert_encoding($retStr, $GLOBALS['CHARSET'], mb_detect_encoding($retStr));
+		global $CHARSET;
+ 		$retStr = trim($inStr);
+ 		if($retStr){
+ 			if(strtolower($CHARSET) == "utf-8" || strtolower($CHARSET) == "utf8"){
+				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true) == "ISO-8859-1"){
+					$retStr = utf8_encode($inStr);
+					//$retStr = iconv("ISO-8859-1//TRANSLIT","UTF-8",$inStr);
+				}
+			}
+			elseif(strtolower($CHARSET) == "iso-8859-1"){
+				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1') == "UTF-8"){
+					$retStr = utf8_decode($inStr);
+					//$retStr = iconv("UTF-8","ISO-8859-1//TRANSLIT",$inStr);
+				}
+			}
  		}
 		return $retStr;
 	}

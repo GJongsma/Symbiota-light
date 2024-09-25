@@ -1,7 +1,7 @@
 <?php
 /*
  * This class is only conceptional and has not been developed much
- * A lot of work would be needed before it could be used
+ * A lot of work would be needed before it could be used  
  */
 
 class SpecProcNlpParser{
@@ -31,21 +31,25 @@ class SpecProcNlpParser{
 		foreach($lineArr as $str){
 			if(stripos($str,'herbarium')) return 0;
 			if(stripos($str,'university')) return 0;
-
-			//Test for country, state via Plants/Lichens of ...
+			
+			//Test for country, state via Plants/Lichens of ...   
 			if(!array_key_exists('stateprovince',$this->dcArr) && preg_match('/\w{1}\s+of\s+(.*)/',$str,$m)){
 				$mStr = trim($m[1]);
-				$sql = 'SELECT c.geoterm AS countryName, s.geoterm AS stateName
-					FROM geographicthesaurus c INNER JOIN geographicthesaurus s ON c.geoThesID = s.parentID
-					WHERE s.geoterm SOUNDS LIKE "'.$mStr.'"';
-				$rs = $this->conn->query($sql);
+				$sql = 'SELECT s.statename, c.countryname '.
+					'FROM lkupstateprovince s INNER JOIN lkupcountry c ON s.stateid = c.stateid '.
+					'WHERE (s.statename SOUNDS LIKE "'.$mStr.') ';
+				$rs = $this->conn->query();
+				$stStr = '';
+				$coStr = '';
 				if($r = $rs->fetch_object()){
-					$this->dcArr['stateprovince'] = $r->stateName;
-					if(!array_key_exists('country',$this->dcArr)) $this->dcArr['country'] = $r->countryName;
+					$this->dcArr['stateprovince'] = $r->statename;
+					if(!array_key_exists('country',$this->dcArr)) $this->dcArr['country'] = $r->countryname;  
 				}
-				$rs->free();
+				$rs->close();
+				if($coStr) $this->dcArr['county'] = $coStr;
+				
 			}
-
+			
 			if(!array_key_exists('county',$this->dcArr) && preg_match('/(\w+)\sCounty|Co\./',$str,$m)){
 				//county match
 				$words = explode(' ',trim($m[1]));
@@ -63,25 +67,26 @@ class SpecProcNlpParser{
 				}
 				$sqlWhere = '';
 				foreach($sTerm as $v){
-					$sqlWhere .= ' OR c.geoTerm SOUNDS LIKE "'.$v.'"';
+					$sqlWhere .= ' OR c.countyname SOUNDS LIKE "'.$v.'"';
 				}
-				$sql = 'SELECT c.geoterm AS countryName FROM geographicthesaurus c ';
-				if(array_key_exists('stateprovince',$this->dcArr)) $sql .= 'INNER JOIN geographicthesaurus s ON c.geoThesID = s.parentID ';
-				$sql .= 'WHERE c.geolevel = 50 AND ('.substr($sqlWhere,4).') ';
-				if(array_key_exists('stateprovince',$this->dcArr)) $sql .= 'c.geolevel = 50 AND s.geoTerm = "'.$this->dcArr['stateprovince'].'"';
+				$sql = 'SELECT c.countyname '.
+					'FROM lkupcounty c ';
+				if(array_key_exists('stateprovince',$this->dcArr)) $sql .= 'INNER JOIN lkupstateprovince s ON c.stateid = s.stateid ';
+				$sql .= 'WHERE ('.substr($sqlWhere,4).') ';
+				if(array_key_exists('stateprovince',$this->dcArr)) $sql .= 's.statename = "'.$this->dcArr['stateprovince'].'"';
 				$rs = $this->conn->query();
 				$coStr = '';
 				while($r = $rs->fetch_object()){
-					if(strlen($r->countyName) > $coStr) $coStr = $r->countyName;
+					if(strlen($r->countyname) > $coStr) $coStr = $r->countyname;
 				}
-				$rs->free();
+				$rs->close();
 				if($coStr) $this->dcArr['county'] = $coStr;
 			}
-			//Test for country
-
-
+			//Test for country 
+			
+			
 			//Test for collector, number, date
-
+		
 		}
 	}
 
@@ -99,8 +104,8 @@ class SpecProcNlpParser{
 				$lastName = $match[0][1];
 			}
 		}
-
-
+		
+		
 	}
 
 	private function parseExsiccati(){
@@ -136,7 +141,7 @@ class SpecProcNlpParser{
 				}
 			}
 		}
-
+		
 		//Look for possible occurrence matches
 		if(isset($this->fragMatches['exsiccatiTitle'])){
 			if(isset($this->fragMatches['exsiccatiNumber'])){
@@ -176,7 +181,7 @@ class SpecProcNlpParser{
 	//Batch processes
 	public function batchNLP(){
 
-
+		
 	}
 
 	private function tokenizeRawString(){
@@ -187,4 +192,4 @@ class SpecProcNlpParser{
 	}
 
 }
-?>
+?> 

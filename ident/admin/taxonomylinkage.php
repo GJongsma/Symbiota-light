@@ -11,16 +11,15 @@ $keyManager->setLangId($langId);
 $keyManager->setCid($cid);
 $tLinks = $keyManager->getTaxonRelevance();
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
 	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../js/jquery.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$( "#relevanceinput" ).autocomplete({
@@ -72,7 +71,6 @@ $tLinks = $keyManager->getTaxonRelevance();
 	</script>
 </head>
 <body>
-	<h1 class="page-heading">Link Character to Taxa</h1>
 	<div id="tlinkdiv" style="margin:15px;">
 		<div style="margin:10px;">
 			<b>Taxonomic relevance of character</b> -
@@ -97,7 +95,7 @@ $tLinks = $keyManager->getTaxonRelevance();
 									<input name="cid" type="hidden" value="<?php echo $cid; ?>" />
 									<input name="tid" type="hidden" value="<?php echo $tid; ?>" />
 									<input name="formsubmit" type="hidden" value="deltaxon" />
-									<input type="image" src="../../images/del.png" style="width:1.3em;" />
+									<input type="image" src="../../images/del.png" style="width:15px;" />
 								</form>
 							</div>
 							<?php
@@ -121,7 +119,7 @@ $tLinks = $keyManager->getTaxonRelevance();
 									<input name="cid" type="hidden" value="<?php echo $cid; ?>" />
 									<input name="tid" type="hidden" value="<?php echo $tid; ?>" />
 									<input name="formsubmit" type="hidden" value="deltaxon" />
-									<input type="image" src="../../images/del.png" style="width:1.3em;" />
+									<input type="image" src="../../images/del.png" style="width:15px;" />
 								</form>
 							</div>
 							<?php
