@@ -1,8 +1,6 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT . '/classes/OccurrenceLoans.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.en.php');
+include_once($SERVER_ROOT.'/classes/OccurrenceLoans.php');
 
 $collid = $_REQUEST['collid'];
 
@@ -14,33 +12,33 @@ if(!$transInstList) echo '<script type="text/javascript">displayNewExchange();</
 ?>
 <div id="exchangeToggle" style="float:right;margin:10px;">
 	<a href="#" onclick="displayNewExchange()">
-		<img src="../../images/add.png" style="width:1.5em;" title="<?php echo $LANG['CREATE_NEW_EXCHANGE']; ?>" alt="<?php echo $LANG['CREATE_NEW_EXCHANGE']; ?>" />
+		<img src="../../images/add.png" alt="Create New Exchange" />
 	</a>
 </div>
 <div id="newexchangediv" style="display:<?php echo ($transInstList?'none':'block'); ?>;width:550px;">
 	<form name="newexchangegiftform" action="exchange.php" method="post" onsubmit="return verfifyExchangeAddForm(this)">
 		<fieldset>
-			<legend><?php echo $LANG['NEW_GIFT']; ?></legend>
+			<legend>New Gift/Exchange</legend>
 			<div style="padding-top:10px;float:left;">
 				<span>
-					<b><?php echo $LANG['TRANS_NO']; ?>:</b>
-					<input type="text" autocomplete="off" name="identifier" maxlength="255" style="width:120px;border:2px solid black;text-align:center;font-weight:bold;color:black;" value="1" />
+					<b>Transaction Number/Identifier:</b>
+					<input type="text" autocomplete="off" name="identifier" maxlength="255" style="width:120px;border:2px solid black;text-align:center;font-weight:bold;color:black;" value="" />
 				</span>
 			</div>
 			<div style="clear:left;padding-top:6px;float:left;">
 				<span>
-					<?php echo $LANG['TRANS_TYPE']; ?>:
+					Transaction Type:
 				</span><br />
 				<span>
-					<select name="transactiontype" style="width:120px;" >
-						<option value="Shipment" SELECTED ><?php echo $LANG['SHIPMENT']; ?></option>
-						<option value="Adjustment"><?php echo $LANG['ADJUSTMENT']; ?></option>
+					<select name="transactiontype" style="width:100px;" >
+						<option value="Shipment" SELECTED >Shipment</option>
+						<option value="Adjustment">Adjustment</option>
 					</select>
 				</span>
 			</div>
 			<div style="padding-top:6px;margin-left:20px;float:left;">
 				<span>
-					<?php echo $LANG['ENTERED_BY']; ?>:
+					Entered By:
 				</span><br />
 				<span>
 					<input type="text" autocomplete="off" name="createdby" maxlength="32" style="width:100px;" value="<?php echo $PARAMS_ARR['un']; ?>" onchange=" " />
@@ -48,23 +46,23 @@ if(!$transInstList) echo '<script type="text/javascript">displayNewExchange();</
 			</div><br />
 			<div style="padding-top:6px;float:left;">
 				<span>
-					<?php echo $LANG['INSTITUTION']; ?>:
+					Institution:
 				</span><br />
 				<span>
 					<select name="iid" style="width:400px;" >
-						<option value=""><?php echo $LANG['SEL_INST']; ?></option>
+						<option value="">Select Institution</option>
 						<option value="">------------------------------------------</option>
 						<?php
 						$instArr = $loanManager->getInstitutionArr();
 						foreach($instArr as $k => $v){
-							echo '<option value="' . $k . '">' . $v . '</option>';
+							echo '<option value="'.$k.'">'.$v.'</option>';
 						}
 						?>
 					</select>
 				</span>
 				<span>
-					<a href="../misc/institutioneditor.php?emode=1" target="_blank" title="<?php echo $LANG['ADD_NEW_INST']; ?>">
-						<img src="../../images/add.png" style="width:1.5em;" />
+					<a href="../misc/institutioneditor.php?emode=1" target="_blank" title="Add a New Institution">
+						<img src="../../images/add.png" style="width:15px;" />
 					</a>
 				</span>
 			</div>
@@ -72,7 +70,7 @@ if(!$transInstList) echo '<script type="text/javascript">displayNewExchange();</
 				<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 				<input type="hidden" name="tabindex" value="2" />
 				<input name="formsubmit" type="hidden" value="createExchange" />
-				<button name="submitbutton" type="submit" value="createExchange"><?php echo $LANG['CREATE_EXCHANGE']; ?></button>
+				<button name="submitbutton" type="submit" value="createExchange">Create  Exchange</button>
 			</div>
 		</fieldset>
 	</form>
@@ -81,42 +79,41 @@ if(!$transInstList) echo '<script type="text/javascript">displayNewExchange();</
 	<?php
 	if($transInstList){
 		?>
-		<h3><?php echo $LANG['TRANS_BY_INST']; ?></h3>
+		<h3>Transaction Records by Institution</h3>
 		<ul>
 			<?php
 			foreach($transInstList as $k => $transArr){
 				?>
 				<li>
-					<?php echo ($transArr['institutioncode'] ? $transArr['institutioncode'] : ($transArr['institutionname'] ? $transArr['institutionname'] : '[no name]')); ?>
+					<a href="#" onclick="toggle('<?php echo $k; ?>');"><?php echo ($transArr['institutioncode'] ? $transArr['institutioncode'] : ($transArr['institutionname'] ? $transArr['institutionname'] : '[no name]')); ?></a>
 					<?php
 					$bal = $transArr['invoicebalance'];
-					echo '(Balance: ' . ($bal?($bal < 0?'<span style="color:red;font-weight:bold;">' . $bal . '</span>':$bal):0) . ')';
+					echo '(Balance: '.($bal?($bal < 0?'<span style="color:red;font-weight:bold;">'.$bal.'</span>':$bal):0).')';
 					?>
-					<a href="#" onclick="toggle('<?php echo $k; ?>');"><img src="../../images/tochild.png" style="width:1em;" /></a>
 					<div id="<?php echo $k; ?>" style="display:none;">
 						<ul>
 							<?php
 							$transList = $loanManager->getTransactions($collid,$k);
 							foreach($transList as $t => $transArr){
 								echo '<li>';
-								echo '<a href="exchange.php?collid=' . htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&exchangeid=' . htmlspecialchars($t, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">#' . $transArr['identifier'] . ' <img src="../../images/edit.png" style="width:1.2em;" /></a>: ';
+								echo '<a href="exchange.php?collid='.$collid.'&exchangeid='.$t.'">#'.$transArr['identifier'].' <img src="../../images/edit.png" style="width:12px" /></a>: ';
 								if($transArr['transactiontype'] == 'Shipment'){
 									if($transArr['in_out'] == 'Out'){
-										echo $LANG['OUTGOING_EX_SENT'];
-										echo $transArr['datesent'] . '; ' . $LANG['INCLUDING'] . ': ';
+										echo 'Outgoing exchange; Sent ';
+										echo $transArr['datesent'].'; Including: ';
 									}
 									else{
-										echo $LANG['INCOMING_EX_RECEIVED'];
-										echo $transArr['datereceived'] . '; ' . $LANG['INCLUDING'] . ': ';
+										echo 'Incoming exchange, received ';
+										echo $transArr['datereceived'].', including: ';
 									}
-									echo ($transArr['totalexmounted']?$transArr['totalexmounted'] . ' ' . $LANG['MOUNTED'] . ', ':'');
-									echo ($transArr['totalexunmounted']?$transArr['totalexunmounted'] . ' ' . $LANG['UNMOUNTED'] . ', ':'');
-									echo ($transArr['totalgift']?$transArr['totalgift'] . ' ' . $LANG['GIFT'] . ', ':'');
-									echo ($transArr['totalgiftdet']?$transArr['totalgiftdet'] . ' ' . $LANG['GIFT_FOR_DET'] . ', ':'');
-									echo $LANG['BALANCE'] . ': ' . $transArr['invoicebalance'];
+									echo ($transArr['totalexmounted']?$transArr['totalexmounted'].' mounted, ':'');
+									echo ($transArr['totalexunmounted']?$transArr['totalexunmounted'].' unmounted, ':'');
+									echo ($transArr['totalgift']?$transArr['totalgift'].' gift, ':'');
+									echo ($transArr['totalgiftdet']?$transArr['totalgiftdet'].' gift-for-det, ':'');
+									echo 'Balance: '.$transArr['invoicebalance'];
 								}
 								else{
-									echo $LANG['ADJUSTMENT_OF'] . $transArr['adjustment'] . ' ' . $LANG['SPECIMENS'];
+									echo 'Adjustment of '.$transArr['adjustment'].' specimens';
 								}
 								echo '</li>';
 							}
@@ -131,7 +128,7 @@ if(!$transInstList) echo '<script type="text/javascript">displayNewExchange();</
 		<?php
 	}
 	else{
-		echo '<div style="font-weight:bold;font-size:120%;margin-top:10px;">' . $LANG['NO_TRANSACTIONS'] . '</div>';
+		echo '<div style="font-weight:bold;font-size:120%;margin-top:10px;">There are no transactions registered for this collection</div>';
 	}
 	?>
 </div>

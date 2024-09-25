@@ -1,25 +1,27 @@
 <?php
-include_once('Manager.php');
+include_once($SERVER_ROOT.'/config/dbconnection.php');
 
-class SiteMapManager extends Manager{
+class SiteMapManager{
 
+	private $conn;
 	private $collArr = array();
 	private $obsArr = array();
 	private $genObsArr = array();
 
 	function __construct() {
-		parent::__construct();
+		$this->conn = MySQLiConnectionFactory::getCon("readonly");
 	}
 
 	function __destruct(){
- 		parent::__destruct();
+ 		if(!($this->conn === false)) $this->conn->close();
 	}
 
 	public function setCollectionList(){
 		global $USER_RIGHTS, $IS_ADMIN;
 		$adminArr = array();
 		$editorArr = array();
-		$sql = 'SELECT collid, CONCAT_WS(":", institutioncode, collectioncode) AS ccode, collectionname, colltype FROM omcollections ';
+		$sql = 'SELECT c.collid, CONCAT_WS(":",c.institutioncode, c.collectioncode) AS ccode, c.collectionname, c.colltype '.
+			'FROM omcollections c ';
 		if(!$IS_ADMIN){
 			if(array_key_exists("CollAdmin",$USER_RIGHTS)){
 				$adminArr = $USER_RIGHTS['CollAdmin'];
@@ -28,14 +30,14 @@ class SiteMapManager extends Manager{
 				$editorArr = $USER_RIGHTS['CollEditor'];
 			}
 			if($adminArr || $editorArr){
-				$sql .= 'WHERE (collid IN('.implode(',',array_merge($adminArr,$editorArr)).')) ';
+				$sql .= 'WHERE (c.collid IN('.implode(',',array_merge($adminArr,$editorArr)).')) ';
 			}
 			else{
 				$sql = '';
 			}
 		}
 		if($sql){
-			$sql .= "ORDER BY collectionname";
+			$sql .= "ORDER BY c.collectionname";
 			//echo "<div>".$sql."</div>";
 			$rs = $this->conn->query($sql);
 			if($rs){
@@ -98,11 +100,12 @@ class SiteMapManager extends Manager{
 
 	public function getProjectList($projArr = ""){
 		$returnArr = Array();
-		$sql = 'SELECT pid, projname, managers FROM fmprojects WHERE ispublic = 1 ';
+		$sql = 'SELECT p.pid, p.projname, p.managers FROM fmprojects p '.
+			'WHERE p.ispublic = 1 ';
 		if($projArr){
-			$sql .= 'AND (pid IN('.implode(',',$projArr).')) ';
+			$sql .= 'AND (p.pid IN('.implode(',',$projArr).')) ';
 		}
-		$sql .= 'ORDER BY projname';
+		$sql .= 'ORDER BY p.projname';
 		//echo '<div>'.$sql.'</div>';
 		$rs = $this->conn->query($sql);
 		if($rs){
@@ -131,19 +134,17 @@ class SiteMapManager extends Manager{
 	 * @return string representation of the most recently applied schema version
 	 */
 	public function getSchemaVersion() {
-		$result = false;
-		$sql = 'SELECT versionnumber FROM schemaversion ORDER BY dateapplied DESC LIMIT 1 ';
-		try{
-			$statement = $this->conn->prepare($sql);
-			$statement->execute();
-			$statement->bind_result($result);
-			$statement->fetch();
-			$statement->close();
+		$result = "No Schema Version Found";
+		$sql = "select versionnumber, dateapplied from schemaversion order by dateapplied desc limit 1 ";
+		$statement = $this->conn->prepare($sql);
+		$statement->execute();
+		$statement->bind_result($version,$dateapplied);
+		while ($statement->fetch())  {
+			$result = $version;
 		}
-		catch(Exception $e){
-			$this->errorMessage = $e->getMessage();
-		}
+		$statement->close();
 		return $result;
 	}
+
 }
 ?>

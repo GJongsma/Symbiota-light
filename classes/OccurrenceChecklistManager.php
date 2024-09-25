@@ -41,9 +41,8 @@ class OccurrenceChecklistManager extends OccurrenceManager{
 			}
 			$result = $this->conn->query($sql);
 			while($r = $result->fetch_object()){
-				$family = $r->family;
-				if($family) $family = strtoupper($family);
-				else $family = 'undefined';
+				$family = strtoupper($r->family);
+				if(!$family) $family = 'undefined';
 				$sciName = $r->sciname;
 				if($sciName && substr($sciName,-5)!='aceae' && substr($sciName,-4)!='idae'){
 					$returnVec[$family][$sciName] = $r->tid;

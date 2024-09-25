@@ -1,9 +1,6 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/TPDescEditorManager.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/taxa/profile/tpdesceditor.'.$LANG_TAG.'.php'))
-	include_once($SERVER_ROOT.'/content/lang/taxa/profile/tpdesceditor.'.$LANG_TAG.'.php');
-else include_once($SERVER_ROOT.'/content/lang/taxa/profile/tpdesceditor.en.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $tid = array_key_exists('tid',$_REQUEST)?$_REQUEST['tid']:0;
@@ -28,8 +25,7 @@ if($isEditor){
 			plugins: "link,charmap,code,paste",
 			toolbar : ["bold italic underline | cut copy paste | outdent indent | subscript superscript | undo redo removeformat | link | charmap | code"],
 			default_link_target: "_blank",
-			paste_as_text: true,
-			convert_urls: false
+			paste_as_text: true
 		});
 	</script>
 	<style>
@@ -37,42 +33,42 @@ if($isEditor){
 		legend{ font-weight: bold }
 	</style>
 	<div style="float:right;" onclick="toggle('adddescrblock');" title="Add a New Description">
-		<img style='border:0px;width:1.3em;' src='../../images/add.png'/>
+		<img style='border:0px;width:15px;' src='../../images/add.png'/>
 	</div>
 	<div id='adddescrblock' style='display:<?php echo ($descList?'none':''); ?>;'>
 		<form name='adddescrblockform' action="tpeditor.php" method="post">
 			<fieldset>
-				<legend><?= $LANG['NEW_DESC_BLOCK'] ?></legend>
+				<legend>New Description Block</legend>
 				<div>
-					<?= $LANG['LANGUAGE'] ?>:
+					Language:
 					<select name="langid">
-						<option value=""><?= $LANG['SEL_LANGUAGE'] ?></option>
+						<option value="">Select Language</option>
 						<?php
 						foreach($langArr as $langID => $langName){
-							echo '<option value="' . $langID . '" ' . (strpos($langName,'(' . $DEFAULT_LANG . ')') ? 'SELECTED' : '') . '>' . $langName . '</option>';
+							echo '<option value="'.$langID.'" '.(strpos($langName,'('.$DEFAULT_LANG.')')?'SELECTED':'').'>'.$langName.'</option>';
 						}
 						?>
 					</select>
 				</div>
 				<div>
-					<?= $LANG['CAPTION'] ?>: <input id='caption' name='caption' style='width:300px;' type='text' />
+					Caption: <input id='caption' name='caption' style='width:300px;' type='text' />
 				</div>
 				<div>
-					<?= $LANG['SOURCE'] ?>: <input id='source' name='source' style='width:450px;' type='text' />
+					Source: <input id='source' name='source' style='width:450px;' type='text' />
 				</div>
 				<div>
-					<?= $LANG['SOURCE_URL'] ?>: <input id='sourceurl' name='sourceurl' style='width:450px;' type='text' />
+					Source Url: <input id='sourceurl' name='sourceurl' style='width:450px;' type='text' />
 				</div>
 				<div>
-					<?= $LANG['NOTES'] ?>: <input id='notes' name='notes' style='width:450px;' type='text' />
+					Notes: <input id='notes' name='notes' style='width:450px;' type='text' />
 				</div>
-				<div>
-					<?= $LANG['SORT_SEQUENCE'] ?>: <input name='displaylevel' style='width:40px;' type='text' />
-				</div>
-				<div>
-					<button name='action' style='margin-top:5px;' type='submit' value='Add Description Block' ><?= $LANG['ADD_DESC_BLOCK'] ?></buton>
+				<div style="float:right;">
+					<input name='action' style='margin-top:5px;' type='submit' value='Add Description Block' />
 					<input type='hidden' name='tid' value='<?php echo $descEditor->getTid();?>' />
 					<input type="hidden" name="tabindex" value="4" />
+				</div>
+				<div>
+					Sort Order: <input name='displaylevel' style='width:40px;' type='text' />
 				</div>
 			</fieldset>
 		</form>
@@ -82,62 +78,62 @@ if($isEditor){
 		foreach($descList as $langid => $descArr){
 			?>
 			<fieldset>
-				<legend><?= $langArr[$langid] . ' ' . $LANG['DESCRIPTIONS'] ?></legend>
+				<legend><?php echo $langArr[$langid]; ?> Descriptions</legend>
 				<?php
 				foreach($descArr as $tdbid => $dArr){
 					?>
 					<fieldset>
-						<legend><?php echo ($dArr["caption"] ? $dArr["caption"] : $LANG['DESCRIPTION_'] . $dArr["displaylevel"]) . ' (#' . $tdbid . ')'; ?></legend>
-						<div style="float:right;" onclick="toggle('dblock-<?= $tdbid ?>');" title="<?= $LANG['EDIT_DESC_BLOCK'] ?>">
-							<img style='border:0px;width:1.3em;' src='../../images/edit.png'/>
+						<legend><?php echo ($dArr["caption"]?$dArr["caption"]:"Description ".$dArr["displaylevel"]).' (#'.$tdbid.')'; ?></legend>
+						<div style="float:right;" onclick="toggle('dblock-<?php echo $tdbid;?>');" title="Edit Description Block">
+							<img style='border:0px;width:12px;' src='../../images/edit.png'/>
 						</div>
 						<?php
 						if($descEditor->getTid() != $dArr['tid']){
 							?>
 							<div style="margin:4px 0px;">
-								<b><?= $LANG['LINKED_TO_SYN'] ?>:</b> <?= $dArr['sciname'] ?>
-								(<a href="tpeditor.php?action=remap&tdbid=<?= $tdbid . '&tid=' . $descEditor->getTid() ?>"><?= $LANG['RELINK_TO_ACCEPTED'] ?></a>)
+								<b>Linked to synonym:</b> <?php echo $dArr['sciname']; ?>
+								(<a href="tpeditor.php?action=remap&tdbid=<?php echo $tdbid.'&tid='.$descEditor->getTid(); ?>">relink to accepted taxon</a>)
 							</div>
 							<?php
 						}
 						?>
-						<div><b><?= $LANG['CAPTION'] ?>:</b> <?php echo $dArr["caption"]; ?></div>
-						<div><b><?= $LANG['SOURCE'] ?>:</b> <?php echo $dArr["source"]; ?></div>
-						<div><b><?= $LANG['SOURCE_URL'] ?>:</b> <a href='<?= $dArr['sourceurl'] ?>'><?= $dArr['sourceurl'] ?></a></div>
-						<div><b><?= $LANG['NOTES'] ?>:</b> <?php echo $dArr["notes"]; ?></div>
+						<div><b>Caption:</b> <?php echo $dArr["caption"]; ?></div>
+						<div><b>Source:</b> <?php echo $dArr["source"]; ?></div>
+						<div><b>Source URL:</b> <a href='<?php echo $dArr["sourceurl"]; ?>'><?php echo $dArr["sourceurl"]; ?></a></div>
+						<div><b>Notes:</b> <?php echo $dArr["notes"]; ?></div>
 						<div id="dblock-<?php echo $tdbid;?>" style="display:none;margin-top:10px;">
 							<fieldset>
-								<legend><?= $LANG['DESC_BLOCK_EDITS'] ?></legend>
+								<legend>Description Block Edits</legend>
 								<form id='updatedescrblock' name='updatedescrblock' action="tpeditor.php" method="post">
 									<div>
-									<?= $LANG['LANGUAGE'] ?>:
+										Language:
 										<select name="langid">
-											<option value=""><?= $LANG['SEL_LANGUAGE'] ?></option>
+											<option value="">Select Language</option>
 											<?php
 											foreach($langArr as $langID => $langName){
-												echo '<option value="' . $langID . '" ' . ($langid==$langID ? 'SELECTED' : '') . '>' . $langName . '</option>';
+												echo '<option value="'.$langID.'" '.($langid==$langID?'SELECTED':'').'>'.$langName.'</option>';
 											}
 											?>
 										</select>
 									</div>
 									<div>
-										<?= $LANG['CAPTION'] ?>:
+										Caption:
 										<input id='caption' name='caption' style='width:450px;' type='text' value='<?php echo $dArr["caption"];?>' />
 									</div>
 									<div>
-										<?= $LANG['SOURCE'] ?>:
+										Source:
 										<input id='source' name='source' style='width:450px;' type='text' value='<?php echo $dArr["source"];?>' />
 									</div>
 									<div>
-										<?= $LANG['SOURCE_URL'] ?>:
+										Source URL:
 										<input id='sourceurl' name='sourceurl' style='width:500px;' type='text' value='<?php echo $dArr["sourceurl"];?>' />
 									</div>
 									<div>
-										<?= $LANG['NOTES'] ?>:
+										Notes:
 										<input name='notes' style='width:450px;' type='text' value='<?php echo $dArr["notes"];?>' />
 									</div>
 									<div>
-										<?= $LANG['DISPLAY_LEVEL'] ?>:
+										Display Level:
 										<input name='displaylevel' style='width:40px;' type='text' value='<?php echo $dArr['displaylevel'];?>' />
 									</div>
 									<div style="margin:10px;">
@@ -145,46 +141,46 @@ if($isEditor){
 										<input name="tdbid" type="hidden" value="<?php echo $tdbid;?>" />
 										<input name="tid" type="hidden" value="<?php echo $descEditor->getTid();?>" />
 										<input name="tabindex" type="hidden" value="4" />
-										<button name="action" type="submit" value="saveDescriptionBlock"><?= $LANG['SAVE_EDITS'] ?></button>
+										<button name="action" type="submit" value="saveDescriptionBlock">Save Edits</button>
 									</div>
 								</form>
 								<hr/>
 								<div style='margin:10px;border:2px solid red;padding:15px;'>
-									<form name='delstmt' action='tpeditor.php' method='post' onsubmit="return window.confirm('<?= $LANG['SURE_DELETE_DESC'] ?>');">
+									<form name='delstmt' action='tpeditor.php' method='post' onsubmit="return window.confirm('Are you sure you want to permanently delete this description?');">
 										<input type='hidden' name='tdbid' value='<?php echo $tdbid;?>' />
 										<input type='hidden' name='tid' value='<?php echo $descEditor->getTid();?>' />
 										<input type="hidden" name="tabindex" value="4" />
-										<button class="button-danger" name='action' type="submit" value='Delete Description Block'><?= $LANG['DEL_DESC_BLOCK'] ?></button> <?= $LANG['INC_STATEMENTS_BELOW'] ?>
+										<button name='action' type="submit" value='Delete Description Block'>Delete Description Block</button> (Including all statements listed below)
 									</form>
 								</div>
 							</fieldset>
 						</div>
 						<div style="margin-top:10px;">
 							<fieldset>
-								<legend><?= $LANG['STATEMENTS'] ?></legend>
-								<div onclick="toggle('addstmt-<?php echo $tdbid;?>');" style="float:right;" title="<?= $LANG['ADD_NEW_STATEMENT'] ?>">
-									<img style='border:0px;width:1.3em;' src='../../images/add.png'/>
+								<legend>Statements</legend>
+								<div onclick="toggle('addstmt-<?php echo $tdbid;?>');" style="float:right;" title="Add a New Statement">
+									<img style='border:0px;width:15px;' src='../../images/add.png'/>
 								</div>
 								<div id='addstmt-<?php echo $tdbid;?>' style='display:<?php echo (isset($dArr["stmts"])?'none':'block'); ?>'>
 									<form name='adddescrstmtform' action="tpeditor.php" method="post">
 										<fieldset style='margin:5px 0px 0px 15px;'>
-											<legend><?= $LANG['NEW_DESC_STATMENT'] ?></legend>
+											<legend>New Description Statement</legend>
 											<div style='margin:3px;'>
-												<?= $LANG['HEADING'] ?>: <input name='heading' style='margin-top:5px;' type='text' />&nbsp;&nbsp;&nbsp;&nbsp;
+												Heading: <input name='heading' style='margin-top:5px;' type='text' />&nbsp;&nbsp;&nbsp;&nbsp;
 												<input name='displayheader' type='checkbox' value='1' CHECKED /> Display Heading
 											</div>
 											<div style='margin:3px;'>
 												<textarea name='statement'></textarea>
 											</div>
 											<div style='margin:3px;'>
-												<?= $LANG['SORT_SEQUENCE'] ?>:
+												Sort Sequence:
 												<input name='sortsequence' style='margin-top:5px;width:40px;' type='text' value='' />
 											</div>
 											<div style="margin:10px;">
 												<input type='hidden' name='tid' value='<?php echo $descEditor->getTid();?>' />
 												<input type='hidden' name='tdbid' value='<?php echo $tdbid;?>' />
 												<input type="hidden" name="tabindex" value="4" />
-												<button name='action' type='submit' value='Add Statement' ><?= $LANG['ADD_STATEMENT'] ?></button>
+												<input name='action' type='submit' value='Add Statement' />
 											</div>
 										</fieldset>
 									</form>
@@ -195,7 +191,7 @@ if($isEditor){
 									foreach($sArr as $tdsid => $stmtArr){
 										?>
 										<div style="margin-top:3px;clear:both;">
-											<span onclick="toggle('edstmt-<?php echo $tdsid;?>');" title="<?= $LANG['EDIT_STATEMENT'] ?>"><img style='border:0px;width:1.2em;' src='../../images/edit.png'/></span>
+											<span onclick="toggle('edstmt-<?php echo $tdsid;?>');" title="Edit Statement"><img style='border:0px;width:12px;' src='../../images/edit.png'/></span>
 											<?php
 											echo ($stmtArr["heading"]?'<b>'.$stmtArr["heading"].'</b>:':'');
 											echo $stmtArr["statement"];
@@ -205,30 +201,30 @@ if($isEditor){
 											<div style='margin:5px 0px 5px 20px;border:2px solid cyan;padding:5px;'>
 												<form id='updatedescr' name='updatedescr' action="tpeditor.php" method="post">
 													<div>
-														<b><?= $LANG['HEADING'] ?>:</b> <input name='heading' style='margin:3px;' type='text' value='<?php echo $stmtArr["heading"];?>' />
-														<input name='displayheader' type='checkbox' value='1' <?php echo ($stmtArr["displayheader"]?"CHECKED":"");?> /> <?= $LANG['DISPLAY_HEADER'] ?>
+														<b>Heading:</b> <input name='heading' style='margin:3px;' type='text' value='<?php echo $stmtArr["heading"];?>' />
+														<input name='displayheader' type='checkbox' value='1' <?php echo ($stmtArr["displayheader"]?"CHECKED":"");?> /> Display Header
 													</div>
 													<div>
 														<textarea name='statement'  style="width:99%;height:200px;margin:3px;"><?php echo $stmtArr["statement"];?></textarea>
 													</div>
 													<div>
-														<b><?= $LANG['SORT_SEQUENCE'] ?>:</b>
+														<b>Sort Sequence:</b>
 														<input name='sortsequence' style='width:40px;' type='text' value='<?php echo $stmtArr["sortsequence"];?>' />
 													</div>
 													<div style="margin:10px;">
 														<input name="tdsid" type="hidden" value="<?php echo $tdsid;?>" />
 														<input name="tid" type="hidden" value="<?php echo $descEditor->getTid();?>" />
 														<input name="tabindex" type="hidden" value="4" />
-														<button name="action" type="submit" value="saveStatementEdit"><?= $LANG['SAVE_EDITS'] ?></button>
+														<button name="action" type="submit" value="saveStatementEdit">Save Edits</button>
 													</div>
 												</form>
 											</div>
 											<div style='margin:5px 0px 5px 20px;border:2px solid red;padding:15px;'>
-												<form name='delstmt' action='tpeditor.php' method='post' onsubmit="return window.confirm('<?= $LANG['SURE_DELETE_STATEMENT'] ?>');">
+												<form name='delstmt' action='tpeditor.php' method='post' onsubmit="return window.confirm('Are you sure you want to permanently delete this statement?');">
 													<input name='tdsid' type='hidden' value='<?php echo $tdsid;?>' />
 													<input name='tid' type="hidden" value='<?php echo $descEditor->getTid();?>' />
 													<input name="tabindex" type="hidden" value="4" />
-													<button name='action' type="submit" value='Delete Statement'><?= $LANG['DEL_STATEMENT'] ?></button>
+													<button name='action' type="submit" value='Delete Statement'>Delete Statement</button>
 												</form>
 											</div>
 										</div>
@@ -247,7 +243,7 @@ if($isEditor){
 		}
 	}
 	else{
-		echo '<h2 style="font-size: 2rem;">' . $LANG['NO_DESC'] . '</h2>';
+		echo '<h2>No descriptions available.</h2>';
 	}
 }
 ?>

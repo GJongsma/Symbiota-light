@@ -1,36 +1,22 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT . '/classes/InstitutionManager.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/misc/institutioneditor.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/misc/institutioneditor.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/collections/misc/institutioneditor.en.php');
+include_once($SERVER_ROOT.'/classes/InstitutionManager.php');
+if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/admin/institutioneditor.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/admin/institutioneditor.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
-
-//since integers are sanizated here, we don't need to resanitize using htmlspecialchars
-$iid = array_key_exists('iid', $_REQUEST) ? filter_var($_REQUEST['iid'], FILTER_SANITIZE_NUMBER_INT) : '';
-$targetCollid = array_key_exists('targetcollid', $_REQUEST) ? filter_var($_REQUEST['targetcollid'], FILTER_SANITIZE_NUMBER_INT) : '';
-
-//emode is alway 0 or 1, thus we can explicit set to 1 whenever emode is true. No sanitation needed because value is not set as input value, which could be anything.
-$eMode = !empty($_REQUEST['emode']) ? 1 : 0;
-
-//$instCodeDefault this does need to be sanitized, but better to do further down where it is used as output. But OK to sanitize here, and maybe better if used numerous times as output.
-//But not if it is set within the class to be used within an SQL statement. Then it's needs to be sanitized beyond the statements that send it to the class
-$instCodeDefault = array_key_exists('instcode',$_REQUEST) ? $_REQUEST['instcode'] : '';
-
-// $formSubmit does not have to be sanitized because it's only used within condition statements and not output to page
-$formSubmit = array_key_exists('formsubmit', $_POST) ? $_POST['formsubmit'] : '';
+$iid = array_key_exists("iid",$_REQUEST)?$_REQUEST["iid"]:0;
+$targetCollid = array_key_exists("targetcollid",$_REQUEST)?$_REQUEST["targetcollid"]:0;
+$eMode = array_key_exists("emode",$_REQUEST)?$_REQUEST["emode"]:0;
+$instCodeDefault = array_key_exists("instcode",$_REQUEST)?$_REQUEST["instcode"]:'';
+$formSubmit = array_key_exists("formsubmit",$_POST)?$_POST["formsubmit"]:"";
 
 $instManager = new InstitutionManager();
-
-// text with $fullCollList is sanitized using cleanOutStr (including htmlspecialchars) within getCollectionList function.
-// The iid value does not have to be sanitized because it is defined as an int, but CheckMarx probably won't know this a might have a problem
 $fullCollList = $instManager->getCollectionList();
-$instManager->setInstitutionId($iid);
-
-//Create a list of collection that are linked to this institutions
+if($iid){
+	$instManager->setInstitutionId($iid);
+}
+//Get list of collection that are linked to this institutions
 $collList = array();
 foreach($fullCollList as $k => $v){
-	//Values were already sanitized when $fullCollList was obtained from DB, thus we should not double sanitized here (e.g. &amp; becomes &amp;amp;
 	if($v['iid'] == $iid) $collList[$k] = $v['name'];
 }
 
@@ -39,88 +25,74 @@ $statusStr = '';
 if($IS_ADMIN){
 	$editorCode = 3;
 }
-elseif(array_key_exists('CollAdmin', $USER_RIGHTS)){
+elseif(array_key_exists("CollAdmin",$USER_RIGHTS)){
 	$editorCode = 1;
-	if($collList && array_intersect($USER_RIGHTS['CollAdmin'], array_keys($collList))){
+	if($collList && array_intersect($USER_RIGHTS["CollAdmin"],array_keys($collList))){
 		$editorCode = 2;
 	}
 }
 if($editorCode){
-	if($formSubmit == 'Add Institution'){
-		if($instManager->insertInstitution($_POST)){
-			// Can only be set to int within class. Let's see if checkmarx knows this.
-			$iid = $instManager->getInstitutionId();
-			$statusStr = 'SUCCESS, institution added!';
-			if($targetCollid) header('Location: ../misc/collprofiles.php?collid=' . $targetCollid);
+	if($formSubmit == "Add Institution"){
+		$iid = $instManager->submitInstitutionAdd($_POST);
+		if($iid){
+			if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
+			$statusStr = 'SUCCESS! Institution added.';
 		}
 		else{
-			$statusStr = 'ERROR creating institution: ' . $instManager->getErrorMessage();
+			$statusStr = $instManager->getErrorStr();
 		}
 	}
 	else{
 		if($editorCode > 1){
-			if($formSubmit == 'Update Institution Address'){
-				if($instManager->updateInstitution($_POST)){
-					if($targetCollid) header('Location: ../misc/collprofiles.php?collid=' . $targetCollid);
+			if($formSubmit == "Update Institution Address"){
+				if($instManager->submitInstitutionEdits($_POST)){
+					if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
 				}
 				else{
-					$statusStr = 'ERROR updating institutions record: ' . $instManager->getErrorMessage();
+					$statusStr = $instManager->getErrorStr();
 				}
 			}
-			elseif(!empty($_POST['deliid'])){
-				if($instManager->deleteInstitution($_POST['deliid'])){
+			elseif(isset($_POST['deliid'])){
+				$delIid = $_POST['deliid'];
+				if($instManager->deleteInstitution($delIid)){
 					$statusStr = 'SUCCESS! Institution deleted.';
 					$iid = 0;
 				}
 				else{
-					$statusStr = 'Unable to delete: ';
-					$errorStr = $instManager->getErrorMessage();
-					if($errorStr == 'LINKED_COLLECTIONS'){
-						$statusStr .= 'following collections need to be unlinked before deletion is allowed';
-						$statusStr .= '<ul><li>' . implode('</li><li>', $instManager->getWarningArr()) . '</li></ul>';
-					}
-					elseif($errorStr == 'LINKED_LOANS'){
-						$statusStr .= 'institution is linked to ' . count($instManager->getWarningArr()) . ' loans';
-					}
-					else{
-						$errorStr = 'ERROR deleting institution: ' . $errorStr;
-					}
+					$statusStr = $instManager->getErrorStr();
 				}
 			}
-			elseif($formSubmit == 'Add Collection'){
-				if($_POST['addcollid'] && is_numeric($_POST['addcollid'])){
-					if($instManager->updateCollectionLink($_POST['addcollid'], $iid)){
-						$collList[$_POST['addcollid']] = $fullCollList[$_POST['addcollid']]['name'];
-					}
-					else{
-						$statusStr = 'ERROR linking collection to institution: ' . $instManager->getErrorMessage();
-					}
+			elseif($formSubmit == "Add Collection"){
+				if($instManager->addCollection($_POST['addcollid'],$iid)){
+					$collList[$_POST['addcollid']] = $fullCollList[$_POST['addcollid']]['name'];
+				}
+				else{
+					$statusStr = $instManager->getErrorStr();
 				}
 			}
 			elseif(isset($_GET['removecollid'])){
-				if($instManager->updateCollectionLink($_GET['removecollid'], null)){
+				if($instManager->removeCollection($_GET['removecollid'])){
 					$statusStr = 'SUCCESS! Institution removed';
 					unset($collList[$_GET['removecollid']]);
 				}
 				else{
-					$statusStr = 'ERROR deleting institution: ' . $instManager->getErrorMessage();
+					$statusStr = $instManager->getErrorStr();
 				}
 			}
 		}
 	}
 }
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>">
-	<title><?php echo $DEFAULT_TITLE; ?> <?php echo $LANG['INSTITUTION_EDITOR']; ?></title>
+	<title><?php echo $DEFAULT_TITLE; ?> Institution Editor</title>
 	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="../../js/jquery.js?ver=140310" type="text/javascript"></script>
+	<script src="../../js/jquery-ui.js?ver=140310" type="text/javascript"></script>
 	<script src="../../js/symb/collections.grscicoll.js?ver=2" type="text/javascript"></script>
 	<script>
 		function toggle(target){
@@ -151,7 +123,7 @@ if($editorCode){
 
 		function validateAddCollectionForm(f){
 			if(f.addcollid.value == ""){
-				alert("<?php echo $LANG['SELECT_COLLECTION']; ?>");
+				alert("Select a collection to be added");
 				return false;
 			}
 			return true;
@@ -161,23 +133,26 @@ if($editorCode){
 </head>
 <body>
 <?php
+$displayLeftMenu = (isset($collections_admin_institutioneditor)?$collections_admin_institutioneditor:true);
 include($SERVER_ROOT.'/includes/header.php');
 ?>
 <div class='navpath'>
-	<a href='../../index.php'><?php echo $LANG['HOME']; ?></a> &gt;&gt;
+	<a href='../../index.php'>Home</a> &gt;&gt;
 	<?php
-	if($targetCollid && !empty($collList[$targetCollid])){
-		echo '<a href="../misc/collprofiles.php?collid=' . $targetCollid . '&emode=1">' . $collList[$targetCollid] . ' ' . $LANG['MANAGEMENT'] . '</a> &gt;&gt;';
+	if(!$targetCollid && count($collList) == 1){
+		$targetCollid = key($collList);
+	}
+	if($targetCollid){
+		echo '<a href="../misc/collprofiles.php?collid='.$targetCollid.'&emode=1">'.$collList[$targetCollid].' Management</a> &gt;&gt;';
 	}
 	else{
-		echo '<a href="institutioneditor.php">' . $LANG['FULL_ADDRESS_LIST'] . '</a> &gt;&gt;';
+		echo '<a href="institutioneditor.php">Full Address List</a> &gt;&gt;';
 	}
 	?>
-	<b><?php echo $LANG['INSTITUTION_EDITOR']; ?></b>
+	<b>Institution Editor</b>
 </div>
 <!-- This is inner text! -->
-<div role="main" id="innertext">
-	<h1 class="page-heading"><?php echo $LANG['INSTITUTION_EDITOR']; ?></h1>
+<div id="innertext">
 	<div id="dialog" title="" style="display: none;">
 		<div id="dialogmsg"></div>
 		<select id="getresult">
@@ -188,27 +163,23 @@ include($SERVER_ROOT.'/includes/header.php');
 		?>
 		<hr />
 		<div style="margin:20px;color:<?php echo (substr($statusStr,0,5)=='ERROR'?'red':'green'); ?>;">
-			<?php //$statusStr is only output from db engine, thus not a big threat, but Checkmarx won't know that, and better safe than sorry ?>
-			<?= htmlspecialchars($statusStr, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) ?>
+			<?php echo $statusStr; ?>
 		</div>
 		<hr />
 		<?php
 	}
 	if($iid){
 		if($instArr = $instManager->getInstitutionData()){
-			//Cleaning this in function when data is harvested is fine, but only if data is used as output by all pages.
-			//If data from fuction is used by another class/page to be reinserted into data, than that would be a problem, but this is rare.
-			$instArr = $instManager->cleanOutArray($instArr);
 			?>
 			<div style="float:right;">
 				<a href="institutioneditor.php">
-					<img src="<?php echo $CLIENT_ROOT;?>/images/toparent.png" style="width:1.2em;border:0px;" title="<?php echo $LANG['RETURN_TO_INST']; ?>" />
+					<img src="<?php echo $CLIENT_ROOT;?>/images/toparent.png" style="width:15px;border:0px;" title="Return to Institution List" />
 				</a>
 				<?php
 				if($editorCode > 1){
 					?>
 					<a href="#" onclick="toggle('editdiv');">
-						<img src="<?php echo $CLIENT_ROOT;?>/images/edit.png" style="width:1.2em;border:0px;" title="<?php echo $LANG['EDIT_INST']; ?>" />
+						<img src="<?php echo $CLIENT_ROOT;?>/images/edit.png" style="width:15px;border:0px;" title="Edit Institution" />
 					</a>
 					<?php
 				}
@@ -217,22 +188,22 @@ include($SERVER_ROOT.'/includes/header.php');
 			<div style="clear:both;">
 				<form id="insteditform" name="insteditform" action="institutioneditor.php" method="post">
 					<fieldset style="padding:20px;">
-						<legend><b><?php echo $LANG['ADDRESS_DETAILS']; ?></b></legend>
+						<legend><b>Address Details</b></legend>
 						<div style="position:relative;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['INSTITUTION_CODE']; ?>:
+								Institution Code:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['institutioncode']; ?>
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'block':'none'; ?>;">
 								<input name="institutioncode" type="text" value="<?php echo $instArr['institutioncode']; ?>" />
-								<button name="getgrscicoll" type="button" value="Update from GrSciColl" onClick="grscicoll('insteditform')"><?php echo $LANG['UPDATE_GRSCICOLL']; ?></button>
+								<input name="getgrscicoll" type="button" value="Update from GrSciColl" onClick="grscicoll('insteditform')"/>
 							</div>
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['INSTITUTION_NAME']; ?>:
+								Institution Name:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['institutionname']; ?>
@@ -243,7 +214,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['INSTITUTION_NAME_TWO']; ?>:
+								Institution Name2:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['institutionname2']; ?>
@@ -254,7 +225,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['ADDRESS']; ?>:
+								Address:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['address1']; ?>
@@ -265,7 +236,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['ADDRESS_TWO']; ?>:
+								Address 2:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['address2']; ?>
@@ -276,7 +247,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['CITY']; ?>City:
+								City:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['city']; ?>
@@ -287,7 +258,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['STATE_PROVINCE']; ?>:
+								State/Province:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['stateprovince']; ?>
@@ -298,7 +269,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['POSTAL_CODE']; ?>:
+								Postal Code:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['postalcode']; ?>
@@ -309,7 +280,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['COUNTRY']; ?>:
+								Country:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['country']; ?>
@@ -320,7 +291,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['PHONE']; ?>:
+								Phone:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['phone']; ?>
@@ -331,7 +302,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['CONTACT']; ?>:
+								Contact:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['contact']; ?>
@@ -342,7 +313,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['EMAIL']; ?>:
+								Email:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['email']; ?>
@@ -353,7 +324,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['URL']; ?>:
+								URL:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<a href="<?php echo $instArr['url']; ?>" target="_blank">
@@ -366,7 +337,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['NOTES']; ?>:
+								Notes:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
 								<?php echo $instArr['notes']; ?>
@@ -376,7 +347,7 @@ include($SERVER_ROOT.'/includes/header.php');
 							</div>
 						</div>
 						<div class="editdiv" style="display:<?php echo $eMode?'block':'none'; ?>;clear:both;margin:30px 0px 0px 20px;">
-							<button name="formsubmit" type="submit" value="Update Institution Address" ><?php echo $LANG['UPDATE_INST_ADDRESS']; ?></button>
+							<input name="formsubmit" type="submit" value="Update Institution Address" />
 							<input name="iid" type="hidden" value="<?php echo $iid; ?>" />
 							<input name="targetcollid" type="hidden" value="<?php echo $targetCollid; ?>" />
 						</div>
@@ -384,30 +355,28 @@ include($SERVER_ROOT.'/includes/header.php');
 				</form>
 				<div style="clear:both;">
 					<fieldset style="padding:20px;">
-						<legend><b><?php echo $LANG['COLL_LINKED_TO _INST_ADDRESS']; ?></b></legend>
+						<legend><b>Collections Linked to Institution Address</b></legend>
 						<div>
 							<?php
 							if($collList){
-								//$collName is cleaned within function that built data array
 								foreach($collList as $id => $collName){
 									echo '<div style="margin:5px;font-weight:bold;clear:both;height:15px;">';
-									echo '<div style="float:left;"><a href="../misc/collprofiles.php?collid=' . $id . '">' . $collName . '</a></div> ';
+									echo '<div style="float:left;"><a href="../misc/collprofiles.php?collid='.$id.'">'.$collName.'</a></div> ';
 									if($editorCode == 3 || in_array($id,$USER_RIGHTS["CollAdmin"]))
-										echo ' <div class="editdiv" style="margin-left:10px;display:'.($eMode?'':'none').'"><a href="institutioneditor.php?iid=' . $iid . '&removecollid=' . $id . '"><img src="../../images/del.png" style="width:1em;"/></a></div>';
+										echo ' <div class="editdiv" style="margin-left:10px;display:'.($eMode?'':'none').'"><a href="institutioneditor.php?iid='.$iid.'&removecollid='.$id.'"><img src="../../images/del.png" style="width:15px;"/></a></div>';
 									echo '</div>';
 								}
 							}
 							else{
-								echo '<div style="margin:25px;"><b>' . $LANG['INST_NOT_LINKED'] . '</b></div>';
+								echo '<div style="margin:25px;"><b>Institution is not linked to a collection</b></div>';
 							}
 							?>
 						</div>
 						<div class="editdiv" style="display:<?php echo $eMode?'block':'none'; ?>;">
-							<div style="margin:15px;clear:both;">* <?php echo $LANG['CLICK_ON_RED']; ?></div>
+							<div style="margin:15px;clear:both;">* Click on red X to unlink collection</div>
 							<?php
 							//Don't show collection that already linked and only show one that user can admin
 							$addList = array();
-							//$fullCollList cleaned when created
 							foreach($fullCollList as $collid => $collArr){
 								if($collArr['iid'] != $iid){
 									if($IS_ADMIN || (isset($USER_RIGHTS["CollAdmin"]) && in_array($collid,$USER_RIGHTS["CollAdmin"]))){
@@ -420,7 +389,7 @@ include($SERVER_ROOT.'/includes/header.php');
 								<hr />
 								<form name="addcollectionform" method="post" action="institutioneditor.php" onsubmit="return validateAddCollectionForm(this)">
 									<select name="addcollid" style="width:400px;">
-										<option value=""><?php echo $LANG['SELECT_COLL_TO_ADD']; ?></option>
+										<option value="">Select collection to add</option>
 										<option value="">------------------------------------</option>
 										<?php
 										foreach($addList as $collid => $collArr){
@@ -429,7 +398,7 @@ include($SERVER_ROOT.'/includes/header.php');
 										?>
 									</select>
 									<input name="iid" type="hidden" value="<?php echo $iid; ?>" />
-									<button name="formsubmit" type="submit" value="Add Collection" ><?php echo $LANG['ADD_COLLECTION']; ?></button>
+									<input name="formsubmit" type="submit" value="Add Collection" />
 								</form>
 								<?php
 							}
@@ -438,13 +407,13 @@ include($SERVER_ROOT.'/includes/header.php');
 					</fieldset>
 					<div class="editdiv" style="display:<?php echo $eMode?'block':'none'; ?>;">
 						<fieldset style="padding:20px;">
-							<legend><b><?php echo $LANG['DEL_INSTITUTION']; ?></b></legend>
-							<form name="instdelform" action="institutioneditor.php" method="post" onsubmit="return confirm('<?php echo $LANG['WANT_TO_DELETE_INST']; ?>')">
+							<legend><b>Delete Institution</b></legend>
+							<form name="instdelform" action="institutioneditor.php" method="post" onsubmit="return confirm('Are you sure you want to delete this institution?')">
 								<div style="position:relative;clear:both;">
-									<button class="button-danger" name="formsubmit" type="submit" value="Delete Institution" <?php if($collList) echo 'disabled'; ?> ><?php echo $LANG['DEL_INSTITUTION']; ?></button>
+									<input name="formsubmit" type="submit" value="Delete Institution" <?php if($collList) echo 'disabled'; ?> />
 									<input name="deliid" type="hidden" value="<?php echo $iid; ?>" />
 									<?php
-									if($collList) echo '<div style="margin:15px;color:red;">' . $LANG['DELETION_OF_ADDRESS'] . '</div>';
+									if($collList) echo '<div style="margin:15px;color:red;">Deletion of addresses that have linked collections is not allowed</div>';
 									?>
 								</div>
 							</form>
@@ -460,25 +429,25 @@ include($SERVER_ROOT.'/includes/header.php');
 			?>
 			<div style="float:right;">
 				<a href="#" onclick="toggle('instadddiv');">
-					<img src="<?php echo $CLIENT_ROOT;?>/images/add.png" style="width:1.5em;border:0px;" title="<?php echo $LANG['ADD_NEW_INST']; ?>" />
+					<img src="<?php echo $CLIENT_ROOT;?>/images/add.png" style="width:15px;border:0px;" title="Add a New Institution" />
 				</a>
 			</div>
 			<div id="instadddiv" style="display:<?php echo ($eMode?'block':'none'); ?>;margin-bottom:8px;">
 				<form id="instaddform" name="instaddform" action="institutioneditor.php" method="post">
 					<fieldset style="padding:20px;">
-						<legend><b><?php echo $LANG['ADD_NEW_INSTITUTION']; ?></b></legend>
+						<legend><b>Add New Institution</b></legend>
 						<div style="position:relative;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['INSTITUTION_CODE']; ?>:
+								Institution Code:
 							</div>
 							<div>
-								<input name="institutioncode" type="text" value="<?= htmlspecialchars($instCodeDefault, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) ?>" />
-								<button name="getgrscicoll" type="button" value="Get data from GrSciColl" onClick="grscicoll('instaddform')"><?php echo $LANG['GET_DATA_FROM_GRSCICOLL']; ?></button>
+								<input name="institutioncode" type="text" value="<?php echo $instCodeDefault; ?>" />
+								<input name="getgrscicoll" type="button" value="Get data from GrSciColl" onClick="grscicoll('instaddform')"/>
 							</div>
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['INSTITUTION_NAME']; ?>:
+								Institution Name:
 							</div>
 							<div>
 								<input name="institutionname" type="text" value="" style="width:400px;" />
@@ -486,8 +455,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['INSTITUTION_NAME_TWO']; ?>:
-
+								Institution Name2:
 							</div>
 							<div>
 								<input name="institutionname2" type="text" value="" style="width:400px;" />
@@ -495,7 +463,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['ADDRESS']; ?>:
+								Address:
 							</div>
 							<div>
 								<input name="address1" type="text" value="" style="width:400px;" />
@@ -503,7 +471,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['ADDRESS_TWO']; ?>:
+								Address 2:
 							</div>
 							<div>
 								<input name="address2" type="text" value="" style="width:400px;" />
@@ -511,7 +479,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['CITY']; ?>:
+								City:
 							</div>
 							<div>
 								<input name="city" type="text" value="" style="width:100px;" />
@@ -519,7 +487,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['STATE_PROVINCE']; ?>:
+								State/Province:
 							</div>
 							<div>
 								<input name="stateprovince" type="text" value="" style="width:100px;" />
@@ -527,7 +495,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['POSTAL_CODE']; ?>:
+								Postal Code:
 							</div>
 							<div>
 								<input name="postalcode" type="text" value="" />
@@ -535,7 +503,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['COUNTRY']; ?>:
+								Country:
 							</div>
 							<div>
 								<input name="country" type="text" value="" />
@@ -543,7 +511,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['PHONE']; ?>:
+								Phone:
 							</div>
 							<div>
 								<input name="phone" type="text" value="" />
@@ -551,7 +519,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['CONTACT']; ?>:
+								Contact:
 							</div>
 							<div>
 								<input name="contact" type="text" value="" />
@@ -559,7 +527,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['EMAIL']; ?>:
+								Email:
 							</div>
 							<div>
 								<input name="email" type="text" value="" style="width:150px" />
@@ -567,7 +535,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['URL']; ?>:
+								URL:
 							</div>
 							<div>
 								<input name="url" type="text" value="" style="width:400px" />
@@ -575,7 +543,7 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['NOTES']; ?>:
+								Notes:
 							</div>
 							<div>
 								<input name="notes" type="text" value="" style="width:400px" />
@@ -583,11 +551,11 @@ include($SERVER_ROOT.'/includes/header.php');
 						</div>
 						<div style="position:relative;clear:both;">
 							<div style="float:left;width:155px;font-weight:bold;">
-								<?php echo $LANG['LINK_TO']; ?>:
+								Link to:
 							</div>
 							<div>
 								<select name="targetcollid" style="width:400px;">
-									<option value=""><?php echo $LANG['LEAVE_ORPHANED']; ?></option>
+									<option value="">Leave Orphaned</option>
 									<option value="">--------------------------------------</option>
 									<?php
 									foreach($fullCollList as $collid => $collArr){
@@ -601,7 +569,7 @@ include($SERVER_ROOT.'/includes/header.php');
 							</div>
 						</div>
 						<div style="margin:20px;clear:both;">
-							<button name="formsubmit" type="submit" value="Add Institution" ><?php echo $LANG['ADD_INST']; ?></button>
+							<input name="formsubmit" type="submit" value="Add Institution" />
 						</div>
 					</fieldset>
 				</form>
@@ -610,7 +578,7 @@ include($SERVER_ROOT.'/includes/header.php');
 			if(!$eMode){
 				?>
 				<div style="padding-left:10px;">
-					<h2><?php echo $LANG['SELECT_INST_FROM_LIST']; ?></h2>
+					<h2>Select an Institution from the list</h2>
 					<ul>
 						<?php
 						$instList = $instManager->getInstitutionList();
@@ -619,13 +587,13 @@ include($SERVER_ROOT.'/includes/header.php');
 								echo '<li><a href="institutioneditor.php?iid='.$iid.'">';
 								echo $iArr['institutionname'].' ('.$iArr['institutioncode'].')';
 								if($editorCode == 3 || array_intersect(explode(',',$iArr['collid']),$USER_RIGHTS["CollAdmin"])){
-									echo ' <a href="institutioneditor.php?emode=1&iid=' . $iid . '"><img src="' . $CLIENT_ROOT . '/images/edit.png" style="width:1.2em;" /></a>';
+									echo ' <a href="institutioneditor.php?emode=1&iid='.$iid.'"><img src="'.$CLIENT_ROOT.'/images/edit.png" style="width:13px;" /></a>';
 								}
 								echo '</a></li>';
 							}
 						}
 						else{
-							echo "<div>" . $LANG['NO_RIGHTS_TO_EDIT_INST'] . "</div>";
+							echo "<div>There are no institutions you have right to edit</div>";
 						}
 						?>
 					</ul>
@@ -634,7 +602,7 @@ include($SERVER_ROOT.'/includes/header.php');
 			}
 		}
 		else{
-			echo "<div>" . $LANG['NEED_AMDINISTRATIVE_USER_RIGHTS'] . "</div>";
+			echo "<div>You need to have administrative user rights for a collection to add an institution</div>";
 		}
 	}
 	?>

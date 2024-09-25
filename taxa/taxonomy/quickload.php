@@ -5,12 +5,17 @@ header("Content-Type: text/html; charset=".$CHARSET);
 
 if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../taxa/taxonomy/quickload.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$loadManager = new TaxonomyHarvester();
+$sciname = array_key_exists('sciname',$_REQUEST)?$_REQUEST['sciname']:'';
+$author = array_key_exists('author',$_REQUEST)?$_REQUEST['author']:'';
+$kingdom = array_key_exists('kingdom',$_REQUEST)?$_REQUEST['kingdom']:'';
+$submitAction = array_key_exists('submitaction',$_POST)?$_POST['submitaction']:'';
 
-$sciname = $_REQUEST['sciname'] ?? '';
-$author = $_REQUEST['author'] ?? '';
-$kingdom = $loadManager->cleanOutStr($_REQUEST['kingdom']) ?? '';
-$submitAction = $_POST['submitaction'] ?? '';
+//Sanitation
+$sciname = filter_var($sciname,FILTER_SANITIZE_STRING);
+$author = filter_var($author,FILTER_SANITIZE_STRING);
+$kingdom = filter_var($kingdom,FILTER_SANITIZE_STRING);
+
+$loadManager = new TaxonomyHarvester();
 
 $isEditor = false;
 if($IS_ADMIN || array_key_exists('Taxonomy',$USER_RIGHTS)){
@@ -19,8 +24,7 @@ if($IS_ADMIN || array_key_exists('Taxonomy',$USER_RIGHTS)){
 
 $status = '';
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
 	<title><?php echo $DEFAULT_TITLE; ?> Taxon Loader: </title>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>
@@ -28,8 +32,8 @@ $status = '';
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../js/jquery.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.js"></script>
 	<script type="text/javascript">
 		function verifyLoadForm(f){
 			if(f.sciname.value == ""){
@@ -52,8 +56,7 @@ $status = '';
 		<b>Taxonomy Loader</b>
 	</div>
 	<!-- This is inner text! -->
-	<div role="main" id="innertext">
-		<h1 class="page-heading">Taxon Loader</h1>
+	<div id="innertext">
 		<?php
 		if($status){
 			echo '<div style="margin:20px;">'.$status.'</div>';
@@ -79,11 +82,11 @@ $status = '';
 					<legend><b>Add New Taxon</b></legend>
 					<div>
 						<div style="float:left;width:170px;">Taxon Name:</div>
-						<input type="text" id="sciname" name="sciname" style="width:300px;border:inset;" value="<?php echo $loadManager->cleanOutStr($sciname); ?>" />
+						<input type="text" id="sciname" name="sciname" style="width:300px;border:inset;" value="<?php echo $sciname; ?>" />
 					</div>
 					<div>
 						<div style="float:left;width:170px;">Author:</div>
-						<input type='text' id='author' name='author' style='width:300px;border:inset;' value="<?php echo $loadManager->cleanOutStr($author); ?>" />
+						<input type='text' id='author' name='author' style='width:300px;border:inset;' value="<?php echo $author; ?>" />
 					</div>
 					<div style="clear:both;">
 						<div style="float:left;width:170px;">Kingdom:</div>

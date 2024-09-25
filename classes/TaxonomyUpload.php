@@ -7,10 +7,10 @@ include_once($SERVER_ROOT.'/classes/OccurrenceMaintenance.php');
 class TaxonomyUpload{
 
 	private $conn;
-	private $uploadFileName = '';
-	private $uploadTargetPath = '';
+	private $uploadFileName;
+	private $uploadTargetPath;
 	private $taxAuthId = 1;
-	private $kingdomName = '';
+	private $kingdomName;
 	private $kingdomTid;
 	private $taxonUnitArr = array();
 	private $statArr = array();
@@ -24,7 +24,8 @@ class TaxonomyUpload{
 		$this->conn = MySQLiConnectionFactory::getCon("write");
  		$this->setUploadTargetPath();
  		set_time_limit(3000);
-		ini_set('max_input_time', 120);
+		ini_set("max_input_time",120);
+  		ini_set('auto_detect_line_endings', true);
 	}
 
 	function __destruct(){
@@ -49,7 +50,7 @@ class TaxonomyUpload{
 			$this->uploadFileName = $_FILES['uploadfile']['name'];
 			move_uploaded_file($_FILES['uploadfile']['tmp_name'], $this->uploadTargetPath.$this->uploadFileName);
 		}
-		if(file_exists($this->uploadTargetPath.$this->uploadFileName) && substr($this->uploadFileName ?? '',-4) == ".zip"){
+		if(file_exists($this->uploadTargetPath.$this->uploadFileName) && substr($this->uploadFileName,-4) == ".zip"){
 			$zip = new ZipArchive;
 			$zip->open($this->uploadTargetPath.$this->uploadFileName);
 			$zipFile = $this->uploadTargetPath.$this->uploadFileName;
@@ -73,10 +74,6 @@ class TaxonomyUpload{
 
 		if(($fh = fopen($this->uploadTargetPath.$this->uploadFileName,'r')) !== FALSE){
 			$headerArr = fgetcsv($fh);
-			if(substr($headerArr[0], 0, 3) == chr(hexdec('EF')).chr(hexdec('BB')).chr(hexdec('BF'))){
-				//Remove UTF-8 BOM
-				$headerArr[0] = trim(substr($headerArr[0], 3), ' "');
-			}
 			$uploadTaxaFieldArr = $this->getUploadTaxaFieldArr();
 			if(!$this->taxonUnitArr) $this->setTaxonUnitArr();
 			$taxonUnitArr = $this->taxonUnitArr;
@@ -818,6 +815,7 @@ class TaxonomyUpload{
 
 		//Update occurrences with new tids
 		$occurMaintenance = new OccurrenceMaintenance($this->conn);
+		$occurMaintenance->setCollidStr($this->collid);
 		$occurMaintenance->generalOccurrenceCleaning();
 		$occurMaintenance->batchUpdateGeoreferenceIndex();
 	}
@@ -914,11 +912,11 @@ class TaxonomyUpload{
 		$retArr = $this->getUploadTaxaFieldArr();
 		unset($retArr['unitind1']);
 		unset($retArr['unitind2']);
-		$retArr['unitname1'] = 'unitname1 (e.g. genus)';
+		$retArr['unitname1'] = 'genus';
 		//unset($retArr['genus']);
-		$retArr['unitname2'] = 'unitname2 (specificEpithet)';
-		$retArr['unitind3'] = 'unitind3 (taxonrank)';
-		$retArr['unitname3'] = 'unitname3 (infraSpecificEpithet)';
+		$retArr['unitname2'] = 'specificepithet';
+		$retArr['unitind3'] = 'taxonrank';
+		$retArr['unitname3'] = 'infraspecificepithet';
 		if(!$this->taxonUnitArr) $this->setTaxonUnitArr();
 		foreach($this->taxonUnitArr as $rankid => $rankName){
 			if($rankName != 'genus' && $rankid < 220) $retArr[$rankName] = $rankName;
@@ -955,12 +953,8 @@ class TaxonomyUpload{
 		$sourceArr = array();
 		if(($fh = fopen($this->uploadTargetPath.$this->uploadFileName,'r')) !== FALSE){
 			$headerArr = fgetcsv($fh);
-			if(substr($headerArr[0], 0, 3) == chr(hexdec('EF')).chr(hexdec('BB')).chr(hexdec('BF'))){
-				//Remove UTF-8 BOM
-				$headerArr[0] = trim(substr($headerArr[0], 3), ' "');
-			}
 			foreach($headerArr as $field){
-				$fieldStr = trim($field);
+				$fieldStr = strtolower(TRIM($field));
 				if($fieldStr){
 					$sourceArr[] = $fieldStr;
 				}

@@ -5,10 +5,10 @@ header("Content-Type: text/html; charset=".$CHARSET);
 
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../ident/admin/index.php');
 
-$formSubmit = array_key_exists('formsubmit', $_POST) ? $_POST['formsubmit'] : '';
-$cid = array_key_exists('cid', $_REQUEST) ? filter_var($_REQUEST['cid'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$tabIndex = array_key_exists('tabindex', $_REQUEST) ? filter_var($_REQUEST['tabindex'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$langId = array_key_exists('langid', $_REQUEST) ? $_REQUEST['langid'] : '';
+$formSubmit = array_key_exists('formsubmit',$_POST)?$_POST['formsubmit']:'';
+$cid = array_key_exists('cid',$_REQUEST)?$_REQUEST['cid']:0;
+$tabIndex = array_key_exists('tabindex',$_REQUEST)?$_REQUEST['tabindex']:0;
+$langId = array_key_exists('langid',$_REQUEST)?$_REQUEST['langid']:'';
 
 $isEditor = false;
 if($IS_ADMIN || array_key_exists('KeyAdmin',$USER_RIGHTS)) $isEditor = true;
@@ -67,8 +67,7 @@ if($formSubmit && $isEditor){
 if(!$cid) header('Location: index.php');
 
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
 	<title>Character Admin</title>
@@ -76,8 +75,8 @@ if(!$cid) header('Location: index.php');
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../js/jquery.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.js"></script>
 	<script type="text/javascript" src="../../js/symb/shared.js"></script>
 	<script type="text/javascript">
 		var tabIndex = <?php echo $tabIndex; ?>;
@@ -250,8 +249,7 @@ if(!$cid) header('Location: index.php');
 		<a href='index.php'> <b>Character Management</b></a>
 	</div>
 	<!-- This is inner text! -->
-	<div role="main" id="innertext">
-		<h1 class="page-heading">Taxon Character Administration</h1>
+	<div id="innertext">
 		<?php
 		if($isEditor){
 			if($statusStr){
@@ -317,34 +315,32 @@ if(!$cid) header('Location: index.php');
 										}
 										?>
 									</select>
-									<a href="#" title="Edit Groupings" onclick="openHeadingAdmin(); return false;"><img src="../../images/edit.png" style="width:1em;" alt="Edit Icon" /></a>
+									<a href="#" onclick="openHeadingAdmin(); return false;"><img src="../../images/edit.png" /></a>
 								</div>
 							</div>
 							<div style="padding-top:8px;clear:both;">
 								<b>Help URL</b><br />
 								<input type="text" name="helpurl" maxlength="500" style="width:80%;" value="<?php echo $charArr['helpurl']; ?>" />
 								<?php
-								if($charArr['helpurl'] && substr($charArr['helpurl'],0,4) == 'http') echo '<a href="' . $charArr['helpurl'] . '" target="_blank"><img src="../../images/link2.png" style="width:1em" ></a>';
+								if($charArr['helpurl'] && substr($charArr['helpurl'],0,4) == 'http') echo '<a href="'.$charArr['helpurl'].'" target="_blank"><img src="../../images/link2.png" style="width:15px" /></a>';
 								?>
 							</div>
 							<?php
-							$glossaryArr = $keyManager->getGlossaryList();
-							if($glossaryArr){
+							$glossArr = $keyManager->getGlossaryList();
+							if($glossArr){
 								?>
 								<div style="padding-top:8px;clear:both;">
 									<b>Glossary link</b><br />
 									<select name="glossid">
 										<option value="">------------------------</option>
 										<?php
-										foreach($glossaryArr as $glossArr){
-											foreach($glossArr as $glossID => $gArr){
-												echo '<option value="'.$glossID.'" '.($charArr['glossid']==$glossID?'selected':'').'>'.$gArr['term'].' ('.$gArr['lang'].')</option>';
-											}
+										foreach($glossArr as $glossID => $gArr){
+											echo '<option value="'.$glossID.'" '.($charArr['glossid']==$glossID?'selected':'').'>'.$gArr['term'].' ('.$gArr['lang'].')</option>';
 										}
 										?>
 									</select>
 									<?php
-									if($charArr['glossid']) echo '<a href="#" onclick="openGlossaryPopup('.$charArr['glossid'].');return false;"><img src="../../images/link2.png" style="width:1em;" /></a>';
+									if($charArr['glossid']) echo '<a href="#" onclick="openGlossaryPopup('.$charArr['glossid'].');return false;"><img src="../../images/link2.png" style="width:15px" /></a>';
 									?>
 								</div>
 								<?php
@@ -377,8 +373,8 @@ if(!$cid) header('Location: index.php');
 				</div>
 				<div id="charstatediv">
 					<div style="float:right;margin:10px;">
-						<a href="#" title="Create New Character State" onclick="toggle('newstatediv');">
-							<img src="../../images/add.png" style="width:1.5em;" alt="Create New Character State" />
+						<a href="#" onclick="toggle('newstatediv');">
+							<img src="../../images/add.png" alt="Create New Character State" />
 						</a>
 					</div>
 					<div id="newstatediv" style="display:<?php echo ($charStateArr?'none':'block');?>;">
@@ -394,17 +390,15 @@ if(!$cid) header('Location: index.php');
 									<input type="text" name="description" maxlength="255" style="width:80%;" />
 								</div>
 								<?php
-								if($glossaryArr){
+								if($glossArr){
 									?>
 									<div style="padding-top:8px;clear:both;">
 										<b>Glossary link</b><br />
 										<select name="glossid">
 											<option value="">------------------------</option>
 											<?php
-											foreach($glossaryArr as $glossArr){
-												foreach($glossArr as $glossID => $gArr){
-													echo '<option value="'.$glossID.'">'.$gArr['term'].' ('.$gArr['lang'].')</option>';
-												}
+											foreach($glossArr as $glossID => $gArr){
+												echo '<option value="'.$glossID.'">'.$gArr['term'].' ('.$gArr['lang'].')</option>';
 											}
 											?>
 										</select>
@@ -435,14 +429,14 @@ if(!$cid) header('Location: index.php');
 							<div>
 								<div id="csplus-<?php echo $cs; ?>" style="margin:5px;">
 									<a href="#" onclick="toggleCharState(<?php echo $cs; ?>);return false;">
-										<img src="../../images/plus.png" style="width:1em;" />
+										<img src="../../images/plus.png" style="width:10px;" />
 										<?php echo $stateArr['charstatename']; ?>
 									</a>
 								</div>
 								<div id="<?php echo 'cs-'.$cs.'Div'; ?>" style="display:none;">
 									<div style="margin:5px;">
 										<a href="#" onclick="toggleCharState(<?php echo $cs; ?>);return false;">
-											<img src="../../images/minus.png" style="width:1em;" />
+											<img src="../../images/minus.png" style="width:10px;" />
 											<?php echo $stateArr['charstatename']; ?>
 										</a>
 									</div>
@@ -458,22 +452,20 @@ if(!$cid) header('Location: index.php');
 												<input type="text" name="description" maxlength="255" style="width:80%;" value="<?php echo $stateArr['description']; ?>"/>
 											</div>
 											<?php
-											if($glossaryArr){
+											if($glossArr){
 												?>
 												<div style="padding-top:8px;clear:both;">
 													<b>Glossary link</b><br />
 													<select name="glossid">
 														<option value="">------------------------</option>
 														<?php
-														foreach($glossaryArr as $glossArr){
-															foreach($glossArr as $glossID => $gArr){
-																echo '<option value="'.$glossID.'" '.($stateArr['glossid']==$glossID?'selected':'').'>'.$gArr['term'].' ('.$gArr['lang'].')</option>';
-															}
+														foreach($glossArr as $glossID => $gArr){
+															echo '<option value="'.$glossID.'" '.($stateArr['glossid']==$glossID?'selected':'').'>'.$gArr['term'].' ('.$gArr['lang'].')</option>';
 														}
 														?>
 													</select>
 													<?php
-													if($stateArr['glossid']) echo '<a href="#" onclick="openGlossaryPopup('.$stateArr['glossid'].');return false;"><img src="../../images/link2.png" style="width:1em" /></a>';
+													if($stateArr['glossid']) echo '<a href="#" onclick="openGlossaryPopup('.$stateArr['glossid'].');return false;"><img src="../../images/link2.png" style="width:15px" /></a>';
 													?>
 												</div>
 												<?php

@@ -18,8 +18,7 @@ if($SYMB_UID){
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<title>Language Variables Manager</title>
 		<?php
@@ -32,13 +31,12 @@ if($SYMB_UID){
 		include($SERVER_ROOT.'/includes/header.php');
 		?>
 		<div class="navpath">
-			<a href="<?php echo htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/index.php">Home</a> &gt;&gt;
+			<a href="<?php echo $CLIENT_ROOT; ?>/index.php">Home</a> &gt;&gt;
 			<b>Language Variable Management</b>
 		</div>
 		<!-- This is inner text! -->
-		<div role="main" id="innertext">
-			<h1 class="page-heading">Language Variables Manager</h1>
-			<div style="margin:20px"><b>Source path:</b> <?php echo '<a href="' . htmlspecialchars($refUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($refUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></div>
+		<div id="innertext">
+			<div style="margin:20px"><b>Source path:</b> <?php echo '<a href="'.$refUrl.'">'.$refUrl; ?></a></div>
 			<div style="margin:20px">
 				<table class="styledtable">
 					<tr>

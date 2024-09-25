@@ -10,7 +10,7 @@ class DwcArchiverBaseManager extends Manager{
 	protected $charSetSource = '';
 	protected $charSetOut = '';
 	protected $sqlBase;
-	private $fileHandler;
+	protected $fileHandler;
 
 	public function __construct($conType, $connOverride){
 		parent::__construct(null, $conType, $connOverride);
@@ -20,7 +20,6 @@ class DwcArchiverBaseManager extends Manager{
 
 	public function __destruct(){
 		parent::__destruct();
-		if($this->fileHandler) fclose($this->fileHandler);
 	}
 
 	protected function setFileHandler($filePath){
@@ -78,17 +77,16 @@ class DwcArchiverBaseManager extends Manager{
 		$retStr = $inStr;
 		if($inStr && $this->charSetSource){
 			if($this->charSetOut == 'UTF-8' && $this->charSetSource == 'ISO-8859-1'){
-				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true) == 'ISO-8859-1'){
-					$retStr = mb_convert_encoding($inStr, 'UTF-8', 'ISO-8859-1');
+				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true) == "ISO-8859-1"){
+					$retStr = utf8_encode($inStr);
+					//$retStr = iconv("ISO-8859-1//TRANSLIT","UTF-8",$inStr);
 				}
 			}
-			elseif($this->charSetOut == 'ISO-8859-1' && $this->charSetSource == 'UTF-8'){
-				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1') == 'UTF-8'){
-					$retStr = mb_convert_encoding($inStr, 'ISO-8859-1', 'UTF-8');
+			elseif($this->charSetOut == "ISO-8859-1" && $this->charSetSource == 'UTF-8'){
+				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1') == "UTF-8"){
+					$retStr = utf8_decode($inStr);
+					//$retStr = iconv("UTF-8","ISO-8859-1//TRANSLIT",$inStr);
 				}
-			}
-			else{
-				$retStr = mb_convert_encoding($inStr, $this->charSetOut, mb_detect_encoding($inStr));
 			}
 		}
 		return $retStr;

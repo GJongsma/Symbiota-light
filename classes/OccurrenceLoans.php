@@ -939,7 +939,7 @@ class OccurrenceLoans extends Manager{
 			}
 
 			if($rs = $this->conn->query($sql)){
-				$maxnum = 0;
+				$maxnum = 1;
 				while($r = $rs->fetch_object()){
 					$num = '';
 

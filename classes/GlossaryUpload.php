@@ -16,7 +16,8 @@ class GlossaryUpload{
 		$this->conn = MySQLiConnectionFactory::getCon("write");
  		$this->setUploadTargetPath();
  		set_time_limit(3000);
-		ini_set('max_input_time', 120);
+		ini_set("max_input_time",120);
+  		ini_set('auto_detect_line_endings', true);
 	}
 
 	function __destruct(){
@@ -442,8 +443,11 @@ class GlossaryUpload{
 
 	//Setters and getters
 	private function setUploadTargetPath(){
-		$tPath = ini_get('upload_tmp_dir');
-		if(!$tPath && !empty($GLOBALS['TEMP_DIR_ROOT'])){
+		$tPath = $GLOBALS["tempDirRoot"];
+		if(!$tPath){
+			$tPath = ini_get('upload_tmp_dir');
+		}
+		if(!$tPath && isset($GLOBALS["TEMP_DIR_ROOT"])){
 			$tPath = $GLOBALS['TEMP_DIR_ROOT'];
 		}
 		if(!$tPath){
@@ -518,20 +522,34 @@ class GlossaryUpload{
 	}
 
 	private function encodeString($inStr){
+		global $CHARSET;
 		$retStr = $inStr;
+		//Get rid of UTF-8 curly smart quotes and dashes
+		$badwordchars=array("\xe2\x80\x98", // left single quote
+							"\xe2\x80\x99", // right single quote
+							"\xe2\x80\x9c", // left double quote
+							"\xe2\x80\x9d", // right double quote
+							"\xe2\x80\x94", // em dash
+							"\xe2\x80\xa6" // elipses
+		);
+		$fixedwordchars=array("'", "'", '"', '"', '-', '...');
+		$inStr = str_replace($badwordchars, $fixedwordchars, $inStr);
+
 		if($inStr){
-			//Get rid of UTF-8 curly smart quotes and dashes
-			$badwordchars=array("\xe2\x80\x98", // left single quote
-					"\xe2\x80\x99", // right single quote
-					"\xe2\x80\x9c", // left double quote
-					"\xe2\x80\x9d", // right double quote
-					"\xe2\x80\x94", // em dash
-					"\xe2\x80\xa6" // elipses
-			);
-			$fixedwordchars=array("'", "'", '"', '"', '-', '...');
-			$retStr = str_replace($badwordchars, $fixedwordchars, $inStr);
-			$retStr = mb_convert_encoding($retStr, $GLOBALS['CHARSET'], mb_detect_encoding($retStr));
-		}
+			if(strtolower($CHARSET) == "utf-8" || strtolower($CHARSET) == "utf8"){
+				//$this->outputMsg($inStr.': '.mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true);
+				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true) == "ISO-8859-1"){
+					$retStr = utf8_encode($inStr);
+					//$retStr = iconv("ISO-8859-1//TRANSLIT","UTF-8",$inStr);
+				}
+			}
+			elseif(strtolower($CHARSET) == "iso-8859-1"){
+				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1') == "UTF-8"){
+					$retStr = utf8_decode($inStr);
+					//$retStr = iconv("UTF-8","ISO-8859-1//TRANSLIT",$inStr);
+				}
+			}
+ 		}
 		return $retStr;
 	}
 }

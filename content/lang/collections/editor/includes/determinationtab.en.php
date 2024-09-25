@@ -7,6 +7,7 @@ Language: English
 
 $LANG['ID_CONFIDENCE'] = 'Identification Confidence Ranking';
 $LANG['MODIFY_CURRENT_RANKING'] = 'Modify current identification ranking';
+$LANG['CONFIDENCE_IN_DET'] = 'Confidence of Determination';
 $LANG['ABSOLUTE'] = 'Absolute';
 $LANG['HIGH'] = 'High';
 $LANG['MEDIUM'] = 'Medium';
@@ -46,5 +47,6 @@ $LANG['MAKE_DET_CURRENT'] = 'Make Determination Current';
 $LANG['MAKE_CURRENT'] = 'Make Current';
 $LANG['SURE_DELETE'] = 'Are you sure you want to delete this specimen determination?';
 $LANG['DELETE_DET'] = 'Delete Determination';
+
 
 ?>

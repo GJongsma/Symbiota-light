@@ -11,11 +11,6 @@
 | It is a breeze. Simply tell Lumen the URIs it should respond to
 | and give it the Closure to call when that URI is requested.
 |
-| Swagger documentation generated using DarkaOnLine
-| https://github.com/DarkaOnLine/SwaggerLume
-| Run to regenerate docs: php artisan swagger-lume:generate
-|
-|
 */
 
 $router->get('/', function () use ($router) {
@@ -23,7 +18,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('/v2', function () use ($router) {
-	return redirect('/v2/documentation');
+	return redirect('/v2/documentation');;
 });
 
 $router->group(['prefix' => 'v2'], function () use ($router) {
@@ -40,7 +35,6 @@ $router->group(['prefix' => 'v2'], function () use ($router) {
 	$router->get('occurrence/{id}/annotation', ['uses' => 'OccurrenceAnnotationController@showOccurrenceAnnotations']);
 	$router->get('occurrence/{id}/reharvest', ['uses' => 'OccurrenceController@oneOccurrenceReharvest']);
 	$router->get('occurrence/annotation/search', ['uses' => 'OccurrenceAnnotationController@showAllAnnotations']);
-	$router->post('occurrence/skeletal', ['uses' => 'OccurrenceController@skeletalImport']);
 
 	$router->get('installation',  ['uses' => 'InstallationController@showAllPortals']);
 	$router->get('installation/ping', ['uses' => 'InstallationController@pingPortal']);
@@ -55,12 +49,11 @@ $router->group(['prefix' => 'v2'], function () use ($router) {
 
 	$router->get('media',  ['uses' => 'MediaController@showAllMedia']);
 	$router->get('media/{id}', ['uses' => 'MediaController@showOneMedia']);
-	$router->post('media', ['uses' => 'MediaController@insert']);
-	$router->patch('media/{id}', ['uses' => 'MediaController@update']);
-	$router->delete('media/{id}', ['uses' => 'MediaController@delete']);
+	//$router->get('mediaadd', ['uses' => 'MediaController@insertOccurrenceMedia']);
+	//$router->delete('media/{id}', ['uses' => 'MediaController@delete']);
+	//$router->put('media/{id}', ['uses' => 'MediaController@update']);
 
-	$router->get('taxonomy', ['uses' => 'TaxonomyController@showAllTaxa']);
-	$router->get('taxonomy/search', ['uses' => 'TaxonomyController@showAllTaxaSearch']);
+	$router->get('taxonomy',  ['uses' => 'TaxonomyController@showAllTaxa']);
 	$router->get('taxonomy/{id}', ['uses' => 'TaxonomyController@showOneTaxon']);
 	//$router->get('taxonomy/{id}/description',  ['uses' => 'TaxonomyController@showAllDescriptions']);
 	//$router->get('taxonomy/{id}/description/{id}',  ['uses' => 'TaxonomyDescriptionController@showOneDescription']);

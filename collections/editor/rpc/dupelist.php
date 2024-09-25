@@ -1,9 +1,6 @@
 <?php
 include_once('../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceDuplicate.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/rpc/dupelist.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/rpc/dupelist.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/collections/editor/rpc/dupelist.en.php');
-
 
 $recordedBy = array_key_exists('recordedby',$_REQUEST)?trim(urldecode($_REQUEST['recordedby'])):'';
 $recordNumber = array_key_exists('recordnumber',$_REQUEST)?trim($_REQUEST['recordnumber']):'';
@@ -19,11 +16,10 @@ $dupeManager = new OccurrenceDuplicate();
 $dupArr = $dupeManager->getDupeList($recordedBy, $recordNumber, $eventDate, $catNum, $queryOccid, $currentOccid);
 
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>">
-	<title><?php echo $DEFAULT_TITLE; ?> <?php echo $LANG['DUPLICATE_LINKER'] ?></title>
+	<title><?php echo $DEFAULT_TITLE; ?> Duplicate Linker</title>
 	<script>
 		<?php 
 		if($action == 'Link as Duplicate'){
@@ -47,39 +43,38 @@ $dupArr = $dupeManager->getDupeList($recordedBy, $recordNumber, $eventDate, $cat
 </head>
 <body>
 	<!-- inner text -->
-	<div role="main" id="innertext">
-		<h1 class="page-heading"><?= $LANG['DUPLICATE_LINKER']; ?></h1>
+	<div id="innertext">
 		<fieldset style="padding:15px;">
-			<legend><b><?php echo $LANG['LINK_NEW_SPECIMEN'] ?></b></legend>
+			<legend><b>Link New Specimen</b></legend>
 			<form name="adddupform" method="post" action="dupelist.php" onsubmit="return validateDupeForm(this)">
 				<div style="margin:3px;">
-					<b><?php echo $LANG['LAST_NAME'] ?></b>
+					<b>Last Name:</b>
 					<input name="recordedby" type="text" value="<?php echo $recordedBy; ?>" />
 				</div>
 				<div style="margin:3px;">
-					<b><?php echo $LANG['NUMBER'] ?></b>
+					<b>Number:</b>
 					<input name="recordnumber" type="text" value="<?php echo $recordNumber; ?>" />
 				</div>
 				<div style="margin:3px;">
-					<b><?php echo $LANG['DATE'] ?></b>
+					<b>Date:</b>
 					<input name="eventdate" type="text" value="<?php echo $eventDate; ?>" />
 				</div>
 				<div style="margin:3px;">
-					<b><?php echo $LANG['CATALOG_NUMBER'] ?></b>
+					<b>Catalog Number:</b>
 					<input name="catnum" type="text" value="" />
 				</div>
 				<div style="margin:3px;">
-					<b><?php echo $LANG['OCCID'] ?></b>
+					<b>occid:</b>
 					<input name="occid" type="text" value="" />
  				</div>
 				<div style="margin:20px;">
 					<input name="curoccid" type="hidden" value="<?php echo $currentOccid; ?>" />
-					<button name="" type="submit" value="Search for Duplicates"><?php echo $LANG['SEARCH_DUPLICATES'] ?></button>
+					<input name="" type="submit" value="Search for Duplicates" />
  				</div>
 			</form>
 		</fieldset>
 		<fieldset>
-			<legend><b><?php echo $LANG['POSSIBLE_DUPLICATES'] ?></b></legend>
+			<legend><b>Possible Duplicates</b></legend>
 			<?php 
 			if($dupArr){
 				foreach($dupArr as $dupOccid => $occArr){
@@ -104,14 +99,14 @@ $dupArr = $dupeManager->getDupeList($recordedBy, $recordNumber, $eventDate, $cat
 							?>
 						</div>
 						<div>
-							<a href="#" onclick="openIndWindow(<?php echo $dupOccid; ?>)"><?php echo $LANG['MORE_DETAILS'] ?></a>
+							<a href="#" onclick="openIndWindow(<?php echo $dupOccid; ?>)">More Details</a>
 						</div>
 						<div style="margin:5px 0px 20px 15px;">
 							<form action="dupelist.php" method="post">
 								<input name="curoccid" type="hidden" value="<?php echo $currentOccid; ?>" />
 								<input name="dupeoccid" type="hidden" value="<?php echo $dupOccid; ?>" />
 								<input name="dupetitle" type="hidden" value="<?php echo $occArr['recordedby'].' '.$occArr['recordnumber'].' '.$occArr['eventdate']; ?>"  />
-								<button name="submitaction" type="submit" value="Link as Duplicate"><?php echo $LANG['LINK_AS_DUPLICATE'] ?></button>
+								<input name="submitaction" type="submit" value="Link as Duplicate" />
 							</form>
 						</div>
 					</div>
@@ -119,7 +114,7 @@ $dupArr = $dupeManager->getDupeList($recordedBy, $recordNumber, $eventDate, $cat
 				}
 			}
 			else{
-				echo '<div style="margin:20px;font-weight:bold">' . $LANG['NO_SPECIMENS_FOUND'] . '</div>';
+				echo '<div style="margin:20px;font-weight:bold">No specimens found matching search criteria</div>';
 			}
 			?>
 		</fieldset>

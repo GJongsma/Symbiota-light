@@ -16,6 +16,7 @@ class SpecUploadDwca extends SpecUploadBase{
 	function __construct() {
  		parent::__construct();
 		$this->setUploadTargetPath();
+		ini_set('auto_detect_line_endings', true);
 	}
 
 	public function __destruct(){
@@ -561,13 +562,13 @@ class SpecUploadDwca extends SpecUploadBase{
 										}
 									}
 								}
-								if($cond == 'IS_NULL'){
+								if($cond == 'ISNULL'){
 									if($targetValue){
 										$addRecord = false;
 										continue 2;
 									}
 								}
-								elseif($cond == 'NOT_NULL'){
+								elseif($cond == 'NOTNULL'){
 									if(!$targetValue){
 										$addRecord = false;
 										continue 2;
@@ -580,7 +581,7 @@ class SpecUploadDwca extends SpecUploadBase{
 									}
 								}
 								else{
-									if($cond == 'STARTS_WITH'){
+									if($cond == 'STARTS'){
 										//Multiple values treated as an OR condition
 										$condMeet = false;
 										foreach($valueArr as $filterValue){
@@ -606,14 +607,14 @@ class SpecUploadDwca extends SpecUploadBase{
 											continue 2;
 										}
 									}
-									elseif($cond == 'LESS_THAN'){
+									elseif($cond == 'LESSTHAN'){
 										$filterValue = array_pop($valueArr);
 										if($targetValue > $filterValue){
 											$addRecord = false;
 											continue 2;
 										}
 									}
-									elseif($cond == 'GREATER_THAN'){
+									elseif($cond == 'GREATERTHAN'){
 										$filterValue = array_pop($valueArr);
 										if($targetValue < $filterValue){
 											$addRecord = false;
@@ -925,7 +926,6 @@ class SpecUploadDwca extends SpecUploadBase{
 			}
 			else $this->outputMsg('<li>ERROR cross-mapping occurrences: '.$portalManager->getErrorMessage().'</li> ');
 		}
-		$this->transferAssociatedOccurrences();
 		$this->finalCleanup();
 		$this->outputMsg('<li style="">Upload Procedure Complete ('.date('Y-m-d h:i:s A').')!</li>');
 		$this->outputMsg(' ');

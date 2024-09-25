@@ -19,17 +19,16 @@ if($collId){
 }
 $_SESSION['statsOrderArr'] = $orderArr;
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<meta name="keywords" content="Natural history collections yearly statistics" />
-		<title><?php echo $DEFAULT_TITLE.' '. $LANG['ORDER_DIST']; ?></title>
+		<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['ORDER_DIST'])?$LANG['ORDER_DIST']:'Order Distribution'); ?></title>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
-		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../js/jquery.js"></script>
+		<script type="text/javascript" src="../../js/jquery-ui.js"></script>
 		<script type="text/javascript" src="../../js/symb/collections.index.js"></script>
 	</head>
 	<body>
@@ -37,11 +36,10 @@ $_SESSION['statsOrderArr'] = $orderArr;
 		$displayLeftMenu = (isset($collections_misc_collstatsMenu)?$collections_misc_collstatsMenu:false);
 		include($SERVER_ROOT.'/includes/header.php');
 		?>
-		<div role="main" id="innertext">
-			<h1 class="page-heading"><?= $LANG['ORDER_DIST']; ?></h1>
+		<div id="innertext">
 			<fieldset id="orderdistbox" style="clear:both;margin-top:15px;width:800px;">
 				<legend><b><?php echo (isset($LANG['ORDER_DIST'])?$LANG['ORDER_DIST']:'Order Distribution'); ?></b></legend>
-				<table class="styledtable" style="font-size:12px;width:780px;">
+				<table class="styledtable" style="font-family:Arial;font-size:12px;width:780px;">
 					<tr>
 						<th style="text-align:center;"><?php echo (isset($LANG['ORDER'])?$LANG['ORDER']:'Order'); ?></th>
 						<th style="text-align:center;"><?php echo (isset($LANG['SPECIMENS'])?$LANG['SPECIMENS']:'Specimens'); ?></th>
@@ -56,7 +54,7 @@ $_SESSION['statsOrderArr'] = $orderArr;
 						echo '<td>'.wordwrap($name,52,"<br />\n",true).'</td>';
 						echo '<td>';
 						if($data['SpecimensPerOrder'] == 1){
-							echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&reset=1&taxa=' . htmlspecialchars($name, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">';
+							echo '<a href="../list.php?db[]='.$collId.'&reset=1&taxa='.$name.'" target="_blank">';
 						}
 						echo number_format($data['SpecimensPerOrder']);
 						if($data['SpecimensPerOrder'] == 1){

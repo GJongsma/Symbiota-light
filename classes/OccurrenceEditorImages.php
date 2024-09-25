@@ -14,9 +14,9 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 
 	public function __construct(){
  		parent::__construct();
- 		$this->imageRootPath = $GLOBALS['IMAGE_ROOT_PATH'];
+ 		$this->imageRootPath = $GLOBALS["imageRootPath"];
  		if(substr($this->imageRootPath,-1) != "/") $this->imageRootPath .= "/";
- 		$this->imageRootUrl = $GLOBALS['IMAGE_ROOT_URL'];
+ 		$this->imageRootUrl = $GLOBALS["imageRootUrl"];
  		if(substr($this->imageRootUrl,-1) != "/") $this->imageRootUrl .= "/";
 	}
 
@@ -62,7 +62,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 						if($ocrSource) $ocrSource .= ': '.date('Y-m-d');
 						$sql = 'INSERT INTO specprocessorrawlabels(imgid, rawstr, source) VALUES('.$this->activeImgId.',"'.$this->cleanRawFragment($rawStr).'","'.$this->cleanInStr($ocrSource).'")';
 						if(!$this->conn->query($sql)){
-							$this->errorArr[] = $LANG['ERROR_LOAD_OCR'].': '.$this->conn->error;
+							$this->errorStr = $LANG['ERROR_LOAD_OCR'].': '.$this->conn->error;
 						}
 					}
 				}
@@ -228,7 +228,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		$status = true;
 		$imgManager = new ImageShared();
 		if(!$imgManager->deleteImage($imgIdDel, $removeImg)){
-			$this->errorArr[] = implode('',$imgManager->getErrArr());
+			$this->errorStr = implode('',$imgManager->getErrArr());
 			$status = false;
 		}
 		return $status;
@@ -434,7 +434,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		$status = $imgManager->insertImageTags($postArr);
 
 		//Get errors and warnings
-		$this->errorArr[] = $imgManager->getErrStr();
+		$this->errorStr = $imgManager->getErrStr();
 		return $status;
 	}
 

@@ -58,9 +58,9 @@ class ImageDetailManager extends Manager {
 
 	public function editImage($postArr){
 		$status = "";
-		$searchStr = $GLOBALS['IMAGE_ROOT_URL'];
+		$searchStr = $GLOBALS["imageRootUrl"];
 		if(substr($searchStr,-1) != "/") $searchStr .= "/";
-		$replaceStr = $GLOBALS['IMAGE_ROOT_PATH'];
+		$replaceStr = $GLOBALS["imageRootPath"];
 		if(substr($replaceStr,-1) != "/") $replaceStr .= "/";
 		$url = $postArr["url"];
 		$tnUrl = $postArr["thumbnailurl"];

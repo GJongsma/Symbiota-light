@@ -31,7 +31,6 @@ $LANG['SEL_REL'] = 'Seleccione Relación';
 $LANG['SYN'] = 'Sinónimo';
 $LANG['TRANSLATION'] = 'Traducción';
 $LANG['TRANSS'] = 'Traducciones';
-$LANG['IMAGES'] = 'Imágenes';
 $LANG['SEL_TERM'] = 'Seleccione un Término a ser Vinculado';
 $LANG['CREATE_TERM'] = 'Crear Término';
 $LANG['NO_PERM'] = 'No tiene permisos de etitor para el glosario';

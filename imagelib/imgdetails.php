@@ -1,9 +1,6 @@
 <?php
 include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/ImageDetailManager.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/imagelib/imgdetails.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/imagelib/imgdetails.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/imagelib/imgdetails.en.php');
-
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $imgId = filter_var($_REQUEST['imgid'], FILTER_SANITIZE_NUMBER_INT);
@@ -44,13 +41,13 @@ if($imgArr){
 	$imgUrl = $imgArr['url'];
 	$origUrl = $imgArr['originalurl'];
 	$metaUrl = $imgArr['url'];
-	if(array_key_exists('IMAGE_DOMAIN', $GLOBALS)){
-		if(substr($imgUrl, 0, 1) == '/'){
-			$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgUrl;
-			$metaUrl = $GLOBALS['IMAGE_DOMAIN'] . $metaUrl;
+	if(array_key_exists('imageDomain',$GLOBALS)){
+		if(substr($imgUrl,0,1)=='/'){
+			$imgUrl = $GLOBALS['imageDomain'].$imgUrl;
+			$metaUrl = $GLOBALS['imageDomain'].$metaUrl;
 		}
 		if($origUrl && substr($origUrl,0,1)=='/'){
-			$origUrl = $GLOBALS['IMAGE_DOMAIN'].$origUrl;
+			$origUrl = $GLOBALS['imageDomain'].$origUrl;
 		}
 	}
 	if(substr($metaUrl,0,1)=='/'){
@@ -58,8 +55,7 @@ if($imgArr){
 	}
 }
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>
 	<?php
@@ -81,8 +77,8 @@ if($imgArr){
 	include_once($SERVER_ROOT.'/includes/head.php');
 	include_once($SERVER_ROOT.'/includes/googleanalytics.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="../js/jquery.js" type="text/javascript"></script>
+	<script src="../js/jquery-ui.js" type="text/javascript"></script>
 	<script src="../js/symb/shared.js" type="text/javascript"></script>
 	<script>
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
@@ -97,7 +93,7 @@ if($imgArr){
 
 		function verifyEditForm(f){
 		    if(f.url.value.replace(/\s/g, "") == "" ){
-		        window.alert("<?php echo $LANG['ERROR_FILE_PATH'] ?>");
+		        window.alert("ERROR: File path must be entered");
 		        return false;
 		    }
 		    return true;
@@ -106,7 +102,7 @@ if($imgArr){
 		function verifyChangeTaxonForm(f){
 			var sciName = f.targettaxon.value.replace(/^\s+|\s+$/g, "");
 		    if(sciName == ""){
-		        window.alert("<?php echo $LANG['ENTER_TAXON_NAME'] ?>");
+		        window.alert("Enter a taxon name to which the image will be transferred");
 		    }
 			else{
 				validateTaxon(f,true);
@@ -137,14 +133,13 @@ if($imgArr){
 		<a href="index.php">Image Browser</a> &gt;&gt;
 		<a href="search.php">Image Search</a> &gt;&gt;
 		<?php
-		//if(isset($imgArr['tid']) && $imgArr['tid']) echo '<a href="../taxa/index.php?tid=' . htmlspecialchars($imgArr['tid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">Image Search</a> &gt;&gt;';
-		//echo '<b>Image Profile: image <a href="imgdetails.php?imgid=' . htmlspecialchars($imgId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">#' . htmlspecialchars($imgId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a></b>';
+		//if(isset($imgArr['tid']) && $imgArr['tid']) echo '<a href="../taxa/index.php?tid='.$imgArr['tid'].'">Image Search</a> &gt;&gt;';
+		//echo '<b>Image Profile: image <a href="imgdetails.php?imgid='.$imgId.'">#'.$imgId.'</a></b>';
 		?>
 	</div>
 	 -->
-	<div role="main" id="innertext">
+	<div id="innertext">
 		<!-- This is inner text! -->
-		<h1 class="page-heading">Image Details</h1>
 		<?php
 		if($imgArr){
 			?>
@@ -152,18 +147,18 @@ if($imgArr){
 				<?php
 				if($SYMB_UID && ($IS_ADMIN || array_key_exists("TaxonProfile",$USER_RIGHTS))){
 					?>
-					<div style="float:right;margin-right:15px;" title="<?php echo $LANG['TAXON_PROFILE_EDITING'] ?>">
-						<a href="../taxa/profile/tpeditor.php?tid=<?php echo htmlspecialchars($imgArr['tid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&tabindex=1" target="_blank">
-							<img src="../images/edit.png" style="width:1.3em;border:0px;" /><span style="font-size:70%"><?php echo $LANG['TP'] ?></span>
+					<div style="float:right;margin-right:15px;" title="Go to Taxon Profile editing page">
+						<a href="../taxa/profile/tpeditor.php?tid=<?php echo $imgArr['tid']; ?>&tabindex=1" target="_blank">
+							<img src="../images/edit.png" style="border:0px;" /><span style="font-size:70%">TP</span>
 						</a>
 					</div>
 					<?php
 				}
 				if($imgArr['occid']){
 					?>
-					<div style="float:right;margin-right:15px;" title="<?php echo $LANG['EDITING_PRIVILEGES'] ?>">
-						<a href="../collections/editor/occurrenceeditor.php?occid=<?php echo htmlspecialchars($imgArr['occid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&tabtarget=2" target="_blank">
-							<img src="../images/edit.png" style="width:1.3em;border:0px;" /><span style="font-size:70%"><?php echo $LANG['SPEC'] ?></span>
+					<div style="float:right;margin-right:15px;" title="Must have editing privileges for this collection managing image">
+						<a href="../collections/editor/occurrenceeditor.php?occid=<?php echo $imgArr['occid']; ?>&tabtarget=2" target="_blank">
+							<img src="../images/edit.png" style="border:0px;" /><span style="font-size:70%">SPEC</span>
 						</a>
 					</div>
 					<?php
@@ -172,8 +167,8 @@ if($imgArr){
 					if($isEditor){
 						?>
 						<div style="float:right;margin-right:15px;">
-							<a href="#" onclick="toggle('imageedit');return false" title="<?php echo $LANG['EDIT_IMAGE'] ?>">
-								<img src="../images/edit.png" style="width:1.3em;border:0px;" /><span style="font-size:70%"><?php echo $LANG['IMG'] ?></span>
+							<a href="#" onclick="toggle('imageedit');return false" title="Edit Image">
+								<img src="../images/edit.png" style="border:0px;" /><span style="font-size:70%">IMG</span>
 							</a>
 						</div>
 						<?php
@@ -181,7 +176,7 @@ if($imgArr){
 				}
 				?>
 				<div style="float:right;margin-right:10px;">
-					<a class="twitter-share-button" data-text="<?php echo $imgArr["sciname"]; ?>" href="https://twitter.com/share" data-url="<?php echo htmlspecialchars($_SERVER['HTTP_HOST'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE). htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '/imagelib/imgdetails.php?imgid=' . htmlspecialchars($imgId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>"><?php echo $LANG['TWEET'] ?></a>
+					<a class="twitter-share-button" data-text="<?php echo $imgArr["sciname"]; ?>" href="https://twitter.com/share" data-url="<?php echo $_SERVER['HTTP_HOST'].$CLIENT_ROOT.'/imagelib/imgdetails.php?imgid='.$imgId; ?>">Tweet</a>
 					<script>
 						window.twttr=(function(d,s,id){
 							var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};
@@ -214,71 +209,71 @@ if($imgArr){
 				<div id="imageedit" style="display:<?php echo ($eMode?'block':'none'); ?>;">
 					<form name="editform" action="imgdetails.php" method="post" target="_self" onsubmit="return verifyEditForm(this);">
 						<fieldset style="margin:5px 0px 5px 5px;">
-					    	<legend><b><?php echo $LANG['EDIT_IMAGE_DETAILS'] ?></b></legend>
+					    	<legend><b>Edit Image Details</b></legend>
 					    	<div style="margin-top:2px;">
-					    		<b><?php echo $LANG['CAPTION'] ?>:</b>
+					    		<b>Caption:</b>
 								<input name="caption" type="text" value="<?php echo $imgArr["caption"];?>" style="width:250px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['PHOTOGRAPHER_USER_ID'] ?>:</b>
+								<b>Photographer User ID:</b>
 								<select name="photographeruid" name="photographeruid">
-									<option value=""><?php echo $LANG['SELECT_PHOTOGRAPHER'] ?></option>
+									<option value="">Select Photographer</option>
 									<option value="">---------------------------------------</option>
 									<?php $imgManager->echoPhotographerSelect($imgArr["photographeruid"]); ?>
 								</select>
-								* <?php echo $LANG['USER_REGISTERED_SYSTEM'] ?>
-								<a href="#" onclick="toggle('iepor');return false;" title="<?php echo $LANG['DISPLAY_PHOTOGRAPHER_FIELD'] ?>">
-									<img src="../images/editplus.png" style="border:0px;width:1.5em;" />
+								* Users registered within system
+								<a href="#" onclick="toggle('iepor');return false;" title="Display photographer override field">
+									<img src="../images/editplus.png" style="border:0px;width:12px;" />
 								</a>
 							</div>
 							<div id="iepor" style="margin-top:2px;display:<?php echo ($imgArr["photographer"]?'block':'none'); ?>;">
-								<b><?php echo $LANG['PHOTOGRAPHER_OVERRIDE'] ?>:</b>
+								<b>Photographer (override):</b>
 								<input name="photographer" type="text" value="<?php echo $imgArr["photographer"];?>" style="width:250px;" />
-								* <?php echo $LANG['OVERRIDE_SELECTION'] ?>
+								* Will override above selection
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['MANAGER'] ?>:</b>
+								<b>Manager:</b>
 								<input name="owner" type="text" value="<?php echo $imgArr["owner"];?>" style="width:250px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['SOURCE_URL'] ?>:</b>
+								<b>Source URL:</b>
 								<input name="sourceurl" type="text" value="<?php echo $imgArr["sourceurl"];?>" style="width:450px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['COPYRIGHT'] ?>:</b>
+								<b>Copyright:</b>
 								<input name="copyright" type="text" value="<?php echo $imgArr["copyright"];?>" style="width:450px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['RIGHTS'] ?>:</b>
+								<b>Rights:</b>
 								<input name="rights" type="text" value="<?php echo $imgArr["rights"];?>" style="width:450px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['LOCALITY'] ?>:</b>
+								<b>Locality:</b>
 								<input name="locality" type="text" value="<?php echo $imgArr["locality"];?>" style="width:550px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['OCCURRENCE_RECORD'] ?> #:</b>
+								<b>Occurrence Record #:</b>
 								<input id="imgdisplay-<?php echo $imgId; ?>" name="displayoccid" type="text" value="" disabled style="width:70px" />
 								<input id="imgoccid-<?php echo $imgId; ?>" name="occid" type="hidden" value="" />
-								<span onclick="openOccurrenceSearch('<?php echo $imgId; ?>');return false"><a href="#"><?php echo $LANG['LINK_OCCUR_RECORD'] ?></a></span>
+								<span onclick="openOccurrenceSearch('<?php echo $imgId; ?>');return false"><a href="#">Link to Occurrence Record</a></span>
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['NOTES'] ?>:</b>
+								<b>Notes:</b>
 								<input name="notes" type="text" value="<?php echo $imgArr["notes"];?>" style="width:550px;" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['SORT_SEQUENCE'] ?>:</b>
+								<b>Sort sequence:</b>
 								<input name="sortsequence" type="text" value="<?php echo $imgArr["sortsequence"];?>" size="5" />
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['WEB_IMAGE'] ?>:</b><br/>
+								<b>Web Image:</b><br/>
 								<input name="url" type="text" value="<?php echo $imgArr["url"];?>" style="width:90%;" />
 								<?php
 								if(stripos($imgArr["url"],$IMAGE_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:70px;">
 										<input type="checkbox" name="renameweburl" value="1" />
-										<?php echo $LANG['RENAME_WEB_IMAGE_FILE'] ?>
+										Rename web image file on server to match above edit (web server file editing privileges required)
 									</div>
 									<input name="oldurl" type="hidden" value="<?php echo $imgArr["url"];?>" />
 									<?php
@@ -286,14 +281,14 @@ if($imgArr){
 								?>
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['THUMBNAIL'] ?>:</b><br/>
+								<b>Thumbnail:</b><br/>
 								<input name="thumbnailurl" type="text" value="<?php echo $imgArr["thumbnailurl"];?>" style="width:90%;" />
 								<?php
 								if(stripos($imgArr["thumbnailurl"],$IMAGE_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:70px;">
 										<input type="checkbox" name="renametnurl" value="1" />
-										<?php echo $LANG['RENAME_THUMBNAIL_IMAGE_FILE'] ?>
+										Rename thumbnail image file on server to match above edit (web server file editing privileges required)
 									</div>
 									<input name="oldthumbnailurl" type="hidden" value="<?php echo $imgArr["thumbnailurl"];?>" />
 									<?php
@@ -301,14 +296,14 @@ if($imgArr){
 								?>
 							</div>
 							<div style="margin-top:2px;">
-								<b><?php echo $LANG['LARGE_IMAGE'] ?>:</b><br/>
+								<b>Large Image:</b><br/>
 								<input name="originalurl" type="text" value="<?php echo $imgArr["originalurl"];?>" style="width:90%;" />
 								<?php
 								if(stripos($imgArr["originalurl"],$IMAGE_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:80px;">
 										<input type="checkbox" name="renameorigurl" value="1" />
-										<?php echo $LANG['RENAME_LARGE_IMAGE_FILE'] ?>
+										Rename large image file on server to match above edit (web server file editing privileges required)
 									</div>
 									<input name="oldoriginalurl" type="hidden" value="<?php echo $imgArr["originalurl"];?>" />
 									<?php
@@ -317,34 +312,34 @@ if($imgArr){
 							</div>
 							<input name="imgid" type="hidden" value="<?php echo $imgId; ?>" />
 							<div style="margin-top:2px;">
-								<button type="submit" name="submitaction" id="editsubmit" value="Submit Image Edits" ><?php echo $LANG['SUBMIT_IMAGE_EDITS'] ?></button>
+								<input type="submit" name="submitaction" id="editsubmit" value="Submit Image Edits" />
 							</div>
 						</fieldset>
 					</form>
 					<form name="changetaxonform" action="imgdetails.php" method="post" target="_self" onsubmit="return verifyChangeTaxonForm(this);" >
 						<fieldset style="margin:5px 0px 5px 5px;">
-					    	<legend><b><?php echo $LANG['TRANSFER_IMAGE_TO_DIFF_NAME'] ?></b></legend>
+					    	<legend><b>Transfer Image to a Different Scientific Name</b></legend>
 							<div style="font-weight:bold;">
-							    <?php echo $LANG['TRANSFER_TO_TAXON'] ?>:
+								Transfer to Taxon:
 								<input type="text" id="taxa" name="targettaxon" size="40" />
 								<input type="hidden" id="tid" name="targettid" value="" />
 								<input type="hidden" name="sourcetid" value="<?php echo $imgArr["tid"];?>" />
 								<input type="hidden" name="imgid" value="<?php echo $imgId; ?>" />
-								<button type="hidden" name="submitaction" value="Transfer Image" ><?php echo $LANG['TRANSFER_IMAGE'] ?></button>
-								<button type="submit" name="submitbutton" value="Transfer Image" ><?php echo $LANG['TRANSFER_IMAGE'] ?></button>
+								<input type="hidden" name="submitaction" value="Transfer Image" />
+								<input type="submit" name="submitbutton" value="Transfer Image" />
 							</div>
 					    </fieldset>
 					</form>
-					<form name="deleteform" action="imgdetails.php" method="post" target="_self" onsubmit="return window.confirm('<?php echo $LANG['DELETE_IMAGE_FROM_SERVER'] ?>');">
+					<form name="deleteform" action="imgdetails.php" method="post" target="_self" onsubmit="return window.confirm('Are you sure you want to delete this image? Note that the physical image will be deleted from the server if checkbox is selected.');">
 						<fieldset style="margin:5px 0px 5px 5px;">
-					    	<legend><b><?php echo $LANG['AUTHORIZED_REMOVE_IMAGE'] ?></b></legend>
+					    	<legend><b>Authorized to Remove this Image</b></legend>
 							<input name="imgid" type="hidden" value="<?php echo $imgId; ?>" />
 							<div style="margin-top:2px;">
-								<button class="button-danger" type="submit" name="submitaction" id="submit" value="Delete Image"><?php echo $LANG['DELETE_IMAGE'] ?></button>
+								<input type="submit" name="submitaction" id="submit" value="Delete Image"/>
 							</div>
-							<input name="removeimg" type="checkbox" value="1" /> <?php echo $LANG['REMOVE_IMG_FROM_SERVER'] ?>
+							<input name="removeimg" type="checkbox" value="1" /> Remove image from server
 							<div style="margin-left:20px;color:red;">
-								<?php echo $LANG['BOX_CHECKED_IMG_DELETED'] ?>
+								(Note: if box is checked, image will be permanently deleted from server, as well as from database)
 							</div>
 				    	</fieldset>
 				    </form>
@@ -358,69 +353,64 @@ if($imgArr){
 					$imgDisplay = $imgUrl;
 					if((!$imgDisplay || $imgDisplay == 'empty') && $origUrl) $imgDisplay = $origUrl;
 					?>
-					<a href="<?php echo htmlspecialchars($imgDisplay, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>">
-						<img src="<?php echo htmlspecialchars($imgDisplay, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>" style="width:300px;" />
+					<a href="<?php echo $imgDisplay;?>">
+						<img src="<?php echo $imgDisplay;?>" style="width:300px;" />
 					</a>
 					<?php
-					if($origUrl) echo '<div><a href="' . htmlspecialchars($origUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . $LANG['CLICK_IMAGE'] . '</a></div>';
+					if($origUrl) echo '<div><a href="'.$origUrl.'">Click on Image to Enlarge</a></div>';
 					?>
 				</div>
 				<div style="padding:10px;float:left;">
 					<div style="clear:both;margin-top:40px;">
-						<b><?php echo $LANG['SCIENTIFIC_NAME'] ?>:</b> <?php echo '<a href="../taxa/index.php?taxon=' . htmlspecialchars($imgArr["tid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '"><i>' . htmlspecialchars($imgArr["sciname"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</i> ' . htmlspecialchars($imgArr["author"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>'; ?>
+						<b>Scientific Name:</b> <?php echo '<a href="../taxa/index.php?taxon='.$imgArr["tid"].'"><i>'.$imgArr["sciname"].'</i> '.$imgArr["author"].'</a>'; ?>
 					</div>
 					<?php
-					if($imgArr['caption']) echo '<div><b>' . $LANG['CAPTION'] . ':</b> '.$imgArr['caption'].'</div>';
+					if($imgArr['caption']) echo '<div><b>Caption:</b> '.$imgArr['caption'].'</div>';
 					if($imgArr['photographerdisplay']){
-						echo '<div><b>' . $LANG['PHOTOGRAPHER'] . ':</b> ';
+						echo '<div><b>Photographer:</b> ';
 						if(!$imgArr['photographer']){
 							$phLink = 'search.php?imagetype=all&phuid='.$imgArr['photographeruid'].'&submitaction=search';
-							echo '<a href="' . htmlspecialchars($phLink, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">';
+							echo '<a href="'.$phLink.'">';
 						}
 						echo $imgArr['photographerdisplay'];
 						if(!$imgArr['photographer']) echo '</a>';
 						echo '</div>';
 					}
-					if($imgArr['owner']) echo '<div><b>' . $LANG['MANAGER'] . ':</b> ' . $imgArr['owner'] . '</div>';
-					if($imgArr['sourceurl']) echo '<div><b>' . $LANG['IMAGE_SOURCE'] . ':</b> <a href="' . htmlspecialchars($imgArr['sourceurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($imgArr['sourceurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a></div>';
-					if($imgArr['locality']) echo '<div><b>' . $LANG['LOCALITY'] . ':</b> ' . $imgArr['locality'] . '</div>';
-					if($imgArr['notes']) echo '<div><b>' . $LANG['NOTES'] . ':</b> ' . $imgArr['notes'] . '</div>';
-					if($imgArr['rights']) echo '<div><b>' . $LANG['RIGHTS'] . ':</b> ' . $imgArr['rights'] . '</div>';
+					if($imgArr['owner']) echo '<div><b>Manager:</b> '.$imgArr['owner'].'</div>';
+					if($imgArr['sourceurl']) echo '<div><b>Image Source:</b> <a href="'.$imgArr['sourceurl'].'" target="_blank">'.$imgArr['sourceurl'].'</a></div>';
+					if($imgArr['locality']) echo '<div><b>Locality:</b> '.$imgArr['locality'].'</div>';
+					if($imgArr['notes']) echo '<div><b>Notes:</b> '.$imgArr['notes'].'</div>';
+					if($imgArr['rights']) echo '<div><b>Rights:</b> '.$imgArr['rights'].'</div>';
 					if($imgArr['copyright']){
 						echo '<div>';
-						echo '<b>' . $LANG['COPYRIGHT'] . ':</b> ';
-						if(stripos($imgArr['copyright'],'http') === 0) echo '<a href="' . htmlspecialchars($imgArr['copyright'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($imgArr['copyright'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
+						echo '<b>Copyright:</b> ';
+						if(stripos($imgArr['copyright'],'http') === 0) echo '<a href="'.$imgArr['copyright'].'">'.$imgArr['copyright'].'</a>';
 						else echo $imgArr['copyright'];
 						echo '</div>';
 					}
 					else{
-						echo '<div><a href="../includes/usagepolicy.php#images">' . $LANG['COPYRIGHT_DETAILS'] . '</a></div>';
+						echo '<div><a href="../includes/usagepolicy.php#images">Copyright Details</a></div>';
 					}
-					if($imgArr['occid']) echo '<div><a href="../collections/individual/index.php?occid=' .htmlspecialchars($imgArr['occid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . $LANG['DISPLAY_SPECIMEN_DETAILS'] . '</a></div>';
-					if($imgUrl) echo '<div><a href="' . htmlspecialchars($imgUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . $LANG['OPEN_MEDIUM_SIZED_IMAGE'] . '</a></div>';
-					if($origUrl) echo '<div><a href="' . htmlspecialchars($origUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . $LANG['OPEN_LARGE_IMAGE'] . '</a></div>';
-					$emailAddress = $ADMIN_EMAIL;
-					if($emailAddress){
-						?>
-						<div style="margin-top:20px;">
-							<?php echo $LANG['ERROR_COMMENT_ABOUT_IMAGE'] ?> <br/><?php echo $LANG['SEND_EMAIL'] ?>:
-							<?php
-							$emailSubject = $DEFAULT_TITLE . ' ' . $LANG['IMG_NO'] . ' ' . $imgId;
-							$emailBody = 'Image being referenced: '.urlencode($serverPath.$CLIENT_ROOT.'/imagelib/imgdetails.php?imgid='.$imgId);
-							$emailRef = 'subject=' . $emailSubject . '&cc=' . $ADMIN_EMAIL . '&body=' . $emailBody;
-							echo '<a href="mailto:' . $ADMIN_EMAIL . '?' . $emailRef . '">' . $emailAddress . '</a>';
-							?>
-						</div>
-						<?php
-					}
+					if($imgArr['occid']) echo '<div><a href="../collections/individual/index.php?occid='.$imgArr['occid'].'">Display Specimen Details</a></div>';
+					if($imgUrl) echo '<div><a href="'.$imgUrl.'">Open Medium Sized Image</a></div>';
+					if($origUrl) echo '<div><a href="'.$origUrl.'">Open Large Image</a></div>';
 					?>
+					<div style="margin-top:20px;">
+						Do you see an error or have a comment about this image? <br/>If so, send email to:
+						<?php
+						$emailSubject = $DEFAULT_TITLE.' Image #'.$imgId;
+						$emailBody = 'Image being referenced: '.$serverPath.$CLIENT_ROOT.'/imagelib/imgdetails.php?imgid='.$imgId;
+						$emailRef = 'subject='.$emailSubject.'&cc='.$ADMIN_EMAIL.'&body='.$emailBody;
+						echo '<a href="mailto:'.$ADMIN_EMAIL.'?'.$emailRef.'">'.$ADMIN_EMAIL.'</a>';
+						?>
+					</div>
 				</div>
 				<div style="clear:both;"></div>
 			</div>
 			<?php
 		}
 		else{
-			echo '<h2 style="margin:30px;">' . $LANG['UNABLE_TO_LOCATE'] . '</h2>';
+			echo '<h2 style="margin:30px;">Unable to locate image.</h2>';
 		}
 		?>
 	</div>
