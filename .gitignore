@@ -15,3 +15,6 @@ includes/citationgbif.php
 includes/citationcollection.php
 includes/citationdataset.php
 includes/citationportal.php
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.php.ui.prefs
