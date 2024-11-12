@@ -17,6 +17,7 @@ $LANG['H_FISH'] = 'Fish';
 $LANG['H_ANIMALIA'] = 'Animalia';
 $LANG['H_PLANTS'] = 'Plants';
 $LANG['H_CITES'] = 'CITES';
+$LANG['H_DYNAMIC_SPP_LIST'] = 'Dynamic Species List';
 $LANG['H_AMPHIBIANS'] = 'Amphibians';
 $LANG['H_ARTHROPODS'] = 'Arthropods';
 $LANG['H_MAMMALS'] = 'Mammals';
