@@ -26,6 +26,7 @@ $LANG['H_REPTILES'] = 'Reptiles';
 $LANG['H_PARTNERS'] = 'Partners';
 $LANG['H_GBIF_BID'] = 'GBIF BID-AF2020-122-NAC';
 $LANG['H_TDWG_POSTER'] = 'TDWG-2021 Poster';
+$LANG['H_SYMBIOTA_HELP'] = 'Symbiota Help';
 
 $LANG['F_FUNDING_PROVIDED_BY'] = 'Funding for this project generously provided by the following organizations:';
 
