@@ -107,19 +107,42 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
                                                 <a href="<?= $CLIENT_ROOT ?>/projects/index.php"><?= $LANG['H_DYNAMIC_SPP_LIST'] ?></a>
                                                 <ul>
                                                         <li>
-                                                                <a href="<?= $CLIENT_ROOT ?>/projects/index.php?pid=3"><?= $LANG['H_AMPHIBIANS_REPTILES'] ?></a>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Amphibia"><?= $LANG['H_AMPHIBIANS'] ?></a>
                                                         </li>
                                                         <li>
-                                                                <a href="<?= $CLIENT_ROOT ?>/projects/index.php?pid=9"><?= $LANG['H_FISH'] ?></a>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Arthropoda"><?= $LANG['H_ARTHROPODS'] ?></a>
                                                         </li>
                                                         <li>
-                                                                <a href="<?= $CLIENT_ROOT ?>/projects/index.php?pid=1"><?= $LANG['H_ANIMALIA'] ?></a>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Mammalia"><?= $LANG['H_MAMMALS'] ?></a>
                                                         </li>
                                                         <li>
-                                                                <a href="<?= $CLIENT_ROOT ?>/projects/index.php?pid=2"><?= $LANG['H_PLANTS'] ?></a>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Aves"><?= $LANG['H_BIRDS'] ?></a>
                                                         </li>
                                                         <li>
-                                                                <a href="<?= $CLIENT_ROOT ?>/projects/index.php?pid=6"><?= $LANG['H_CITES'] ?></a>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Plantae"><?= $LANG['H_PLANTS'] ?></a>
+                                                        </li>
+														<li>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Actinopterygii"><?= $LANG['H_FISH'] ?></a>
+                                                        </li>
+														<li>
+                                                                <a href="<?= $CLIENT_ROOT ?>/checklists/dynamicmap.php?interface=checklist&taxa=Reptilia"><?= $LANG['H_REPTILES'] ?></a>
+                                                        </li>
+                                                </ul>
+                                        </li>
+										<li>
+                                                <a href="#"><?= $LANG['H_MORE_INFO'] ?></a>
+                                                <ul>
+                                                        <li>
+                                                                <a href="<?= $CLIENT_ROOT ?>/collections/misc/collprofiles.php"><?= $LANG['H_PARTNERS'] ?></a>
+                                                        </li>
+                                                        <li>
+                                                                <a href="https://www.gbif.org/project/BID-AF2020-122-NAC/the-gabon-biodiversity-portal" target="_blank"><?= $LANG['H_GBIF_BID'] ?></a>
+                                                        </li>
+                                                        <li>
+                                                                <a href="<?= $CLIENT_ROOT ?>/misc/TDWG_2021/index.php"><?= $LANG['H_TDWG_POSTER'] ?></a>
+                                                        </li>
+                                                        <li>
+                                                                <a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_v5.pdf"><?= $LANG['H_SYMBIOTA_HELP'] ?></a>
                                                         </li>
                                                 </ul>
                                         </li>
@@ -129,33 +152,9 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 						</a>
 					</li>
 					<li>
-						<a href="https://symbiota.org/docs" target="_blank" rel="noopener noreferrer">
-							<?= $LANG['H_HELP'] ?>
-						</a>
-					</li>
-					<li>
 						<a href='<?= $CLIENT_ROOT ?>/sitemap.php'>
 							<?= $LANG['H_SITEMAP'] ?>
 						</a>
-					</li>
-					<li>
-						<a href="#">Example Dropdown</a>
-						<ul>
-							<li>
-								<a href="#">Link 1</a>
-							</li>
-							<li>
-								<a href="#">Link 2</a>
-							</li>
-							<li>
-								<a href="#">Sub Menu</a>
-								<ul>
-									<li>
-										<a href="#">Link 3</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
 					</li>
 					<li id="lang-select-li">
 						<label for="language-selection"><?= $LANG['H_SELECT_LANGUAGE'] ?>: </label>

@@ -9,6 +9,23 @@
  e.g. override: $LANG['H_COLLECTIONS'] = 'Search Lichen Collections';
 */
 
+$LANG['H_COLLECTIONS'] = 'Colecciones';
+$LANG['H_DYNAMIC_SPECIES_LIST'] = 'Lista Dinámica de Especies';
+$LANG['H_IMG_CONTRIBUTORS'] = 'Colaboradores de Imágenes';
+$LANG['H_AMPHIBIANS_REPTILES'] = 'Anfibios y Reptiles';
+$LANG['H_FISH'] = 'Peces';
+$LANG['H_ANIMALIA'] = 'Animalia';
+$LANG['H_PLANTS'] = 'Plantas';
+$LANG['H_CITES'] = 'CITES';
+$LANG['H_AMPHIBIANS'] = 'Anfibios';
+$LANG['H_ARTHROPODS'] = 'Artrópodos';
+$LANG['H_MAMMALS'] = 'Mamíferos';
+$LANG['H_BIRDS'] = 'Aves';
+$LANG['H_REPTILES'] = 'Reptiles';
+$LANG['H_PARTNERS'] = 'Socios';
+$LANG['H_GBIF_BID'] = 'GBIF BID-AF2020-122-NAC';
+$LANG['H_TDWG_POSTER'] = 'Póster TDWG-2021';
+
 $LANG['F_FUNDING_PROVIDED_BY'] = 'Financiamiento para este proyecto proporcionado generosamente por las siguientes organizaciones:';
 
 ?>
