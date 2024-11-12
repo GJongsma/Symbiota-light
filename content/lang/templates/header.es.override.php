@@ -9,6 +9,6 @@
  e.g. override: $LANG['H_COLLECTIONS'] = 'Search Lichen Collections';
 */
 
-
+$LANG['F_FUNDING_PROVIDED_BY'] = 'Financiamiento para este proyecto proporcionado generosamente por las siguientes organizaciones:';
 
 ?>
