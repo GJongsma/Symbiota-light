@@ -7,20 +7,44 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 <head>
-	<title><?php echo $DEFAULT_TITLE; ?> Home</title>
+	<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['HOME']; ?></title>
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	include_once($SERVER_ROOT.'/includes/googleanalytics.php');
 	?>
-	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
-	<link href="<?php echo $CSS_BASE_PATH; ?>/quicksearch.css" type="text/css" rel="Stylesheet" />
-	<script src="<?PHP echo $CLIENT_ROOT; ?>/js/jquery-3.2.1.min.js" type="text/javascript"></script>
-	<script src="<?PHP echo $CLIENT_ROOT; ?>/js/jquery-ui-1.12.1/jquery-ui.min.js" type="text/javascript"></script>
-	<script type="text/javascript">
+	<link href="<?= $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+	<link href="<?= $CSS_BASE_PATH; ?>/quicksearch.css" type="text/css" rel="Stylesheet" />
+	<script src="<?= $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<!--<script type="text/javascript">
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
 	</script>
-	<script src="<?PHP echo $CLIENT_ROOT; ?>/js/symb/api.taxonomy.taxasuggest.js" type="text/javascript"></script>
-	<script src="<?PHP echo $CLIENT_ROOT; ?>/js/jquery.slides.js"></script>
+	<script src="<?= $CLIENT_ROOT; ?>/js/symb/api.taxonomy.taxasuggest.js" type="text/javascript"></script>
+	-->
+		<script type="text/javascript">
+		var clientRoot = "<?= $CLIENT_ROOT ?>";
+		$(document).ready(function() {
+			$("#qstaxa").autocomplete({
+				source: function( request, response ) {
+					$.getJSON( "checklists/rpc/speciessuggest.php", { term: request.term }, response );
+				},
+				minLength: 3,
+				autoFocus: true,
+				select: function( event, ui ) {
+					if(ui.item){
+						$( "#qstaxa" ).val(ui.item.value);
+						$( "#qstid" ).val(ui.item.id);
+					}
+				},
+				change: function( event, ui ) {
+					if(ui.item === null) {
+						$( "#qstid" ).val("");
+					}
+				}
+			});
+		});
+	</script>
+	<script src="<?= $CLIENT_ROOT; ?>/js/jquery.slides.js"></script>
 	<style>
 		#slideshowcontainer{ margin-left:auto; margin-right: auto; }
 	</style>
@@ -30,8 +54,8 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 	include($SERVER_ROOT.'/includes/header.php');
 	?>
 	<!-- This is inner text! -->
-	<div  id="innertext">
-		<div style="float:right;width:400px;margin-left:20px">
+	<main  id="innertext">
+		<div style="float:right;width:400px;margin-left:20px;margin-top:20px;">
 			<div id="quicksearchdiv">
 				<!-- -------------------------QUICK SEARCH SETTINGS--------------------------------------- -->
 				<form name="quicksearch" id="quicksearch" action="<?php echo $CLIENT_ROOT; ?>/taxa/index.php" method="get" onsubmit="return verifyQuickSearch(this);">
@@ -40,7 +64,9 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 					<button name="formsubmit"  id="quicksearchbutton" type="submit" value="Search Terms"><?php echo (isset($LANG['QSEARCH_SEARCH_BUTTON'])?$LANG['QSEARCH_SEARCH_BUTTON']:'Search'); ?></button>
 				</form>
 			</div>
-			<div>
+		</div>
+		<h1><?= $LANG['WELCOME_GABON_BIODIVERSITY'] ?></h1>
+		<div style="float:right;margin-left:10px;">
 				<?php
 				//---------------------------SLIDESHOW SETTINGS---------------------------------------
 				//If more than one slideshow will be active, assign unique numerical ids for each slideshow.
@@ -69,12 +95,10 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 				echo $pluginManager->createSlideShow($ssId,$numSlides,$width,$numDays,$imageType,$clId,$dayInterval,$interval);
 				?>
 			</div>
-		</div>
 		<?php
 		if($LANG_TAG=='fr'){
 			?>
-			<h1>Bienvenue sur le Portail de la Biodiversité du Gabon</h1>
-			<div style="padding: 0px 10px;font-size:130%">
+			<div style="padding: 0px 10px;">
 				<p>
 					Ce portail de données est destiné à servir de ressource collaborative qui intègre le contenu de la biodiversité provenant de diverses sources.
 					Le portail peut être utilisé pour gérer des données en direct dans le portail ou pour établir une correspondance avec des ensembles de données gérés dans
@@ -97,8 +121,7 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 		}
 		elseif($LANG_TAG=='es'){
 			?>
-			<h1>Bienvenido al Portal de Biodiversidad de la Comunidad de Gabón</h1>
-			<div style="padding: 0px 10px;font-size:130%">
+			<div style="padding: 0px 10px;">
 				<p>
 					Este portal de datos está destinado a servir como un recurso colaborativo que integra contenido de biodiversidad de diversas fuentes.
 					El portal se puede utilizar para administrar datos en vivo directamente dentro del portal, o mapear conjuntos de datos administrados en
@@ -121,8 +144,7 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 		}
 		else{
 			?>
-			<h1>Welcome to the Gabon Community Biodiversity Portal</h1>
-			<div style="padding: 0px 10px;font-size:130%">
+			<div style="padding: 0px 10px;">
 				<p>
 					This data portal is meant to serve as a collaborative resource that integrates
 					biodiversity content from various sources. The portal can be used to manage live data directly within the portal or map to datasets
@@ -145,16 +167,16 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 		}
 		?>
 		<div>
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ENEF_logo.jpeg" style="height:50px; padding: 10px" />
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/iraf.png" style="height:50px; padding: 10px" />
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/IRET_logo.jpg" style="height:50px; padding: 10px" />
-				<a href="https://univ-masuku.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/USTM_logo.png" style="height:50px; padding: 10px" /></a>
-				<a href="https://nationalzoo.si.edu/ccs/gabon-program" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/smithsonian_logo.png" style="height:50px; padding: 10px" /></a>
-				<a href="https://www.nbm-mnb.ca/natural-sciences/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/NBM_Black.png" style="height:35px; padding: 10px" /></a>
-				<a href="https://biokic.asu.edu/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ASU_biokic_logo.png" style="height:40px; padding: 10px" /></a>
-				<a href="https://www.floridamuseum.ufl.edu/nhdept/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/FM_logo.png" style="height:25px; padding: 10px" /></a>
+				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ENEF_logo.jpeg" style="height:100px; padding: 10px" />
+				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/iraf.png" style="height:100px; padding: 10px" />
+				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/IRET_logo.jpg" style="height:100px; padding: 10px" />
+				<a href="https://univ-masuku.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/USTM_logo.png" style="height:100px; padding: 10px" /></a>
+				<a href="https://nationalzoo.si.edu/ccs/gabon-program" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/smithsonian_logo.png" style="height:100px; padding: 10px" /></a>
+				<a href="https://www.nbm-mnb.ca/natural-sciences/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/NBM_Black.png" style="height:70px; padding: 10px" /></a>
+				<a href="https://biokic.asu.edu/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ASU_biokic_logo.png" style="height:80px; padding: 10px" /></a>
+				<a href="https://www.floridamuseum.ufl.edu/nhdept/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/FM_logo.png" style="height:50px; padding: 10px" /></a>
 		</div>
-	</div>
+	</main>
 	<?php
 	include($SERVER_ROOT.'/includes/footer.php');
 	?>

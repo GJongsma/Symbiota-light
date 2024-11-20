@@ -36,7 +36,7 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 			</nav>
 			<div class="top-brand">
 				<div class="brand-name">
-					<h1><?= $LANG['BIODIVERSITY_OF_GABON'] ?></h1>
+					<h1><?= $LANG['BIODIVERSITY_GABON'] ?></h1>
 				</div>
 			</div>
 		</div>
@@ -156,7 +156,7 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 							<?= $LANG['H_SITEMAP'] ?>
 						</a>
 					</li>
-					<li id="lang-select-li">
+					<li id="lang-select-li" style="margin-top:10px;">
 						<label for="language-selection"><?= $LANG['H_SELECT_LANGUAGE'] ?>: </label>
 						<select oninput="setLanguage(this)" id="language-selection" name="language-selection">
 							<option value="en">English</option>
