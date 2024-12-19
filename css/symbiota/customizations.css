@@ -13,3 +13,8 @@ This stylesheet is defined last and will override all previously loaded sheets. 
     height: 350px;
   }
 }
+
+.button-secondary {
+  background-color: var(--bright-color);
+  color: white;
+}
