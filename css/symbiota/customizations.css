@@ -6,3 +6,17 @@ This stylesheet is defined last and will override all previously loaded sheets. 
 .top-menu ul li {
   margin-top:10px;
 }
+
+.button-tertiary {
+  background-color: transparent;
+  border: 1px solid var(--bright-color);
+  padding: 0.5rem 0.9rem;
+  color: black;
+}
+
+.welcome-text {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+  color: black;
+}
