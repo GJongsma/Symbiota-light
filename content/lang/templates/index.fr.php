@@ -4,6 +4,7 @@
 Language: Français (French)
 ------------------
 */
+$LANG['HOME'] = 'Accueil';
 
 $LANG['HOME'] = 'Accueil';
 $LANG['WELCOME_GABON_BIODIVERSITY'] = 'Bienvenue sur le Portail de la Biodiversité du Gabon';
@@ -11,6 +12,7 @@ $LANG['WELCOME_GABON_BIODIVERSITY'] = 'Bienvenue sur le Portail de la Biodiversi
 //Taxon Quick Search plugin variables
 $LANG['QSEARCH_SEARCH'] = 'Rechercher de Taxons';
 $LANG['QSEARCH_SEARCH_BUTTON'] = 'Rechercher';
+$LANG['TAXON'] = 'Taxon';
 
 //Slideshow plugin variables
 $LANG['HIDE_CAPTION'] = 'MASQUER LÉGENDE';
