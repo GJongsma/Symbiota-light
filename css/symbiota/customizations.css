@@ -3,3 +3,18 @@ Place your CSS customizations here.
 This stylesheet is defined last and will override all previously loaded sheets. You may reference variables defined in variables.css 
  */
  
+@media (min-width: 768px) {
+  body {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto; /* header, breadcrumbs, main, footer */
+  }
+  #hero-area{
+    width: 100%;
+    height: 350px;
+  }
+}
+
+.button-secondary {
+  background-color: var(--bright-color);
+  color: white;
+}
