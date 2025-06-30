@@ -31,7 +31,7 @@ $countRecords = new CountOccurrenceRecords();
 			?>
 			<div>
 			<h1 class="headline">Histoire naturelle</h1>
-				<p>Les collections de recherche scientifiques du Musée du Nouveau-Brunswick sont le résultat d'un travail s'échelonnant 
+				<p>Lessssss collections de recherche scientifiques du Musée du Nouveau-Brunswick sont le résultat d'un travail s'échelonnant 
 					sur plus d'un siècle et demi. Depuis ses débuts en 1842, comme Musée Gesner, les collections sont passées de 2 173 
 					objets énumérés dans le catalogue Gesner à plus de 300 000 spécimens aujourd'hui.</p>
 		</div>
