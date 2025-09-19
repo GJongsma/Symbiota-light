@@ -22,7 +22,7 @@ $countRecords = new CountOccurrenceRecords();
 	<?php
 	include($SERVER_ROOT . '/includes/header.php');
 	?>
-	<div id="hero-area" style="background-image:url(https://www.nbm-mnb.ca/wp-content/uploads/2021/06/Natural-History-Banner.png);">
+	<div id="hero-area" style="background-image:url(<?= $CLIENT_ROOT ?>/images/layout/Natural-History-Banner.png);">
 	</div>
 	<div class="navpath"></div>
 	<div id="innertext">
