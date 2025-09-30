@@ -30,6 +30,6 @@ $LANG['H_TDWG_POSTER'] = 'TDWG-2021 Poster';
 $LANG['H_SYMBIOTA_HELP'] = 'Symbiota Help';
 
 $LANG['F_FUNDING_PROVIDED_BY'] = 'Funding for this project generously provided by the following organizations:';
-
+$LANG['F_NATURE_CONSERVE_LOGO'] = 'Nature Conserve Logo';
 
 ?>
