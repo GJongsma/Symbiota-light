@@ -167,14 +167,14 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 		}
 		?>
 		<div>
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ENEF_logo.jpeg" style="height:100px; padding: 10px" />
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/iraf.png" style="height:100px; padding: 10px" />
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/IRET_logo.jpg" style="height:100px; padding: 10px" />
-				<a href="https://univ-masuku.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/USTM_logo.png" style="height:100px; padding: 10px" /></a>
-				<a href="https://nationalzoo.si.edu/ccs/gabon-program" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/smithsonian_logo.png" style="height:100px; padding: 10px" /></a>
-				<a href="https://www.nbm-mnb.ca/natural-sciences/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/NBM_Black.png" style="height:70px; padding: 10px" /></a>
-				<a href="https://biokic.asu.edu/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ASU_biokic_logo.png" style="height:80px; padding: 10px" /></a>
-				<a href="https://www.floridamuseum.ufl.edu/nhdept/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/FM_logo.png" style="height:50px; padding: 10px" /></a>
+			<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ENEF_logo.jpeg" style="height:100px; padding: 10px" />
+			<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/iraf.png" style="height:100px; padding: 10px" />
+			<img src="<?php echo $CLIENT_ROOT; ?>/images/logos/IRET_logo.jpg" style="height:100px; padding: 10px" />
+			<a href="https://univ-masuku.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/USTM_logo.png" style="height:100px; padding: 10px" /></a>
+			<a href="https://nationalzoo.si.edu/ccs/gabon-program" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/smithsonian_logo.png" style="height:100px; padding: 10px" /></a>
+			<a href="https://www.nbm-mnb.ca/en/collections" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/NBM_Black.png" style="height:70px; padding: 10px" /></a>
+			<a href="https://biodiversity.ku.edu/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/ku_bi_logo.jpg" style="height:80px; padding: 10px" /></a>
+			<a href="https://www.floridamuseum.ufl.edu/nhdept/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/FM_logo.png" style="height:50px; padding: 10px" /></a>
 		</div>
 	</main>
 	<?php
