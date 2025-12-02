@@ -113,8 +113,8 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 				</p>
 				<p>
 					Si vous avez des questions, des commentaires ou des recommandations, veuillez en faire part au
-					<a class="bodylink" href="mailto:symbiota@asu.edu?subject=Gabon Portal Feedback">HelpDesk du Hub (symbiota@asu.edu)</a>.
-					Consultez la <a href="misc/usagepolicy.php">page Politique d'utilisation des données</a> pour savoir comment citer les données obtenues à partir de cette ressource Web.
+					<a class="bodylink" href="mailto:help@symbiota.org?subject=Gabon Portal Feedback">HelpDesk du Hub (help@symbiota.org)</a>.
+					Consultez la <a href="includes/usagepolicy.php">page Politique d'utilisation des données</a> pour savoir comment citer les données obtenues à partir de cette ressource Web.
 				</p>
 			</div>
 			<?php
@@ -136,8 +136,8 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 				</p>
 				<p>
 					Si tiene preguntas, comentarios o recomendaciones, comparta sus comentarios con
-					<a class="bodylink" href="mailto:symbiota@asu.edu?subject=Gabon Portal Feedback">Support Hub HelpDesk (symbiota@asu.edu)</a>.
-					Visite la <a href="misc/usagepolicy.php">página de Política de Uso de Datos</a> para obtener información acerca de cómo citar los datos obtenidos de este recurso web.
+					<a class="bodylink" href="mailto:help@symbiota.org?subject=Gabon Portal Feedback">Support Hub HelpDesk (help@symbiota.org)</a>.
+					Visite la <a href="includes/usagepolicy.php">página de Política de Uso de Datos</a> para obtener información acerca de cómo citar los datos obtenidos de este recurso web.
 				</p>
 			</div>
 			<?php
@@ -159,8 +159,8 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 				</p>
 				<p>
 					If you have questions, comments, or recommendations, please share your feedback with the
-					<a class="bodylink" href="mailto:symbiota@asu.edu?subject=Gabon Portal Feedback">Support Hub HelpDesk (symbiota@asu.edu)</a>.
-					Visit the <a href="misc/usagepolicy.php">Data Usage Policy</a> page for information on how to cite data obtained from this web resource.
+					<a class="bodylink" href="mailto:help@symbiota.org?subject=Gabon Portal Feedback">Support Hub HelpDesk (help@symbiota.org)</a>.
+					Visit the <a href="includes/usagepolicy.php">Data Usage Policy</a> page for information on how to cite data obtained from this web resource.
 				</p>
 			</div>
 			<?php
@@ -177,6 +177,9 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 			<a href="https://www.floridamuseum.ufl.edu/nhdept/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/logos/FM_logo.png" style="height:50px; padding: 10px" /></a>
 		</div>
 	</main>
+	<?php if($GLOBALS['DONATE_LINK'] && file_exists($SERVER_ROOT . '/includes/donationButton.php')): ?>
+		<?php include($SERVER_ROOT . '/includes/donationButton.php') ?>
+	<?php endif ?>
 	<?php
 	include($SERVER_ROOT.'/includes/footer.php');
 	?>
