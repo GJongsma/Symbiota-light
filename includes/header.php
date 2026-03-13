@@ -74,7 +74,7 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 						</a>
 					</li>
 					<li>
-						<a href="<?= $CLIENT_ROOT ?>/checklists/index.php">
+						<a href="<?= $CLIENT_ROOT ?>/projects/index.php">
 							<?= $LANG['H_INVENTORIES'] ?>
 						</a>
 					</li>
