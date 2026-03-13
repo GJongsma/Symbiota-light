@@ -1,6 +1,8 @@
 <?php
-include_once($SERVER_ROOT.'/content/lang/collections/harvestparams.'.$LANG_TAG.'.php');
 include_once($SERVER_ROOT.'/config/dbconnection.php');
+include_once($SERVER_ROOT . '/classes/utilities/Language.php');
+
+Language::load('collections/harvestparams');
 
 abstract class TaxaSearchType {
 	const  ANY_NAME				= 1;
@@ -54,15 +56,15 @@ class OccurrenceTaxaManager {
 		if($exactMatchOnly) $this->exactMatchOnly = true;
 
 		//sanitize
-		$associationTypeStr = $this->cleanAndAssignGeneric('association-type', $inputArr);
-		$associatedTaxonStr = $this->cleanAndAssignGeneric('associated-taxa', $inputArr);
+		$associationTypeStr = $this->cleanAndAssignGeneric('association-type', $inputArr) ?? $this->cleanInputStr($_REQUEST['association-type']);
+		$associatedTaxonStr = $this->cleanAndAssignGeneric('associated-taxa', $inputArr) ?? $this->cleanInputStr($_REQUEST['associated-taxa']);
 		if($associationTypeStr){
 			$this->associationArr['relationship'] = $associationTypeStr;
 		}
 
 		if($associatedTaxonStr){
 			$this->associationArr['search'] = $associatedTaxonStr;
-			$this->setAssociationUseThes($inputArr, 'usethes-associations');
+			$this->setAssociationUseThes($inputArr, 'usethes-associations') ?? $this->setAssociationUseThes(null, 'usethes-associations');
 			$defaultTaxaType = $this->setAndGetAssociationDefaultTaxaType($inputArr);
 
 			$this->associationTaxaSearchTerms = explode(',',$associatedTaxonStr);
