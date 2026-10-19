@@ -6,8 +6,7 @@ else include_once($SERVER_ROOT . '/content/lang/prohibit.en.php');
 header('Content-Type: text/html; charset=' . $CHARSET);
 header('Location: '.$CLIENT_ROOT.'/index.php');
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html>
 	<head>
 		<title><?php echo $LANG['FORBIDDEN']; ?></title>
 		<?php
